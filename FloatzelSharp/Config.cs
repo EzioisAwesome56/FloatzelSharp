@@ -13,6 +13,12 @@ namespace FloatzelSharp
         // ah well
         [JsonProperty("token")]
         public string Token { get; private set; }
+        [JsonProperty("Prefix")]
+        public string Prefix { get; private set; }
+        [JsonProperty("Devfix")]
+        public string Devfix { get; private set; }
+        [JsonProperty("Dev")]
+        public bool Dev { get; private set; }
 
         private static Config _instance;
 

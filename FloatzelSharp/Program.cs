@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.CommandsNext;
 
 namespace FloatzelSharp
 {
     class Program
     {
         static DiscordClient discord;
+        static CommandsNextModule commands;
         static void Main(string[] args)
         {
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -18,13 +20,15 @@ namespace FloatzelSharp
             discord = new DiscordClient(new DiscordConfiguration
             {
                 Token = config.Token,
-                TokenType = TokenType.Bot
+                TokenType = TokenType.Bot,
+                UseInternalLogHandler = true,
+                LogLevel = LogLevel.Debug
             });
-            discord.MessageCreated += async e =>
+            commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
-                if (e.Message.Content.ToLower().StartsWith("ping"))
-                    await e.Message.RespondAsync("pong!");
-            };
+                StringPrefix = config.Dev ? config.Prefix : config.Devfix
+            });
+            commands.RegisterCommands<TestCommands>();
 
             await discord.ConnectAsync();
             await Task.Delay(-1);
