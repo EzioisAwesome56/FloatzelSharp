@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FloatzelSharp
 {
-    class TestCommands
+    class TestCommands : BaseCommandModule
     {
         [Command("test")]
         public async Task test(CommandContext ctx)

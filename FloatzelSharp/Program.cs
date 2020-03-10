@@ -8,7 +8,7 @@ namespace FloatzelSharp
     class Program
     {
         static DiscordClient discord;
-        static CommandsNextModule commands;
+        static CommandsNextExtension commands;
         static void Main(string[] args)
         {
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -26,7 +26,7 @@ namespace FloatzelSharp
             });
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
-                StringPrefix = config.Dev ? config.Prefix : config.Devfix
+                StringPrefixes = new string[] { config.Dev ? config.Prefix : config.Devfix }
             });
             commands.RegisterCommands<TestCommands>();
 
