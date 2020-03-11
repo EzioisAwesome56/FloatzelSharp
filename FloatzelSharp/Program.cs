@@ -2,17 +2,28 @@
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Interactivity;
+using FloatzelSharp.commands;
+using FloatzelSharp.util;
 
 namespace FloatzelSharp
 {
     class Program
     {
+
+        private async static Task PrintError(CommandErrorEventArgs e) {
+            if (e.Exception is CommandNotFoundException) return;
+            await e.Context.Channel.SendMessageAsync($"An error occured: {e.Exception.Message}");
+            Console.Error.WriteLine(e.Exception);
+        }
+
         static DiscordClient discord;
         static CommandsNextExtension commands;
         static InteractivityExtension? Interactivity;
         static void Main(string[] args)
         {
+            Database.dbinit();
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
@@ -34,9 +45,11 @@ namespace FloatzelSharp
                 StringPrefixes = new string[] { config.Dev ? config.Prefix : config.Devfix },
                 EnableDefaultHelp = false
             });
+            commands.CommandErrored += PrintError;
             commands.RegisterCommands<OtherCommands>();
             commands.RegisterCommands<TestCommands>();
             commands.RegisterCommands<HelpCmd>();
+            commands.RegisterCommands<MoneyCommands>();
 
             await discord.ConnectAsync();
             await Task.Delay(-1);

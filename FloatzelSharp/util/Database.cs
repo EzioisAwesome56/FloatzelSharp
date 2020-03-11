@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
 
@@ -61,14 +62,13 @@ namespace FloatzelSharp.util
 
 
         // check if a bank account exists
-        public static bool dbCheckIfExist(string uid) {
+        public static bool dbCheckIfExist(string id) {
             return (bool) r.Table(banktable).Filter(
-                r.HashMap("uid", uid)).Count().Eq(1).Run(thonk);
+                r.HashMap("uid", id)).Count().Eq(1).Run(thonk);
         }
 
         // load user bank account
-        public static int dbLoadInt(string uid) {
-
+        public static BankAcc dbLoadInt(string id) {
         }
     }
 }

@@ -31,6 +31,8 @@ namespace FloatzelSharp.commands {
                 return;
             }
             // TODO: load db value.
+            BankAcc dank = Database.dbLoadInt(uid);
+            Console.WriteLine(dank.bal.ToString());
         }
     }
 }
