@@ -68,7 +68,8 @@ namespace FloatzelSharp.util
         }
 
         // load user bank account
-        public static BankAcc dbLoadInt(string id) {
+        public static Cursor<object> dbLoadInt(string id) {
+            return r.Table(banktable).Filter(row => row.GetField("uid").Eq(id)).GetField("bal").Run(thonk);
         }
     }
 }
