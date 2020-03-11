@@ -58,5 +58,17 @@ namespace FloatzelSharp.util
             r.TableCreate(tags).Run(thonk);
             r.TableCreate(stockbuy).Run(thonk);
         }
+
+
+        // check if a bank account exists
+        public static bool dbCheckIfExist(string uid) {
+            return (bool) r.Table(banktable).Filter(
+                r.HashMap("uid", uid)).Count().Eq(1).Run(thonk);
+        }
+
+        // load user bank account
+        public static int dbLoadInt(string uid) {
+
+        }
     }
 }
