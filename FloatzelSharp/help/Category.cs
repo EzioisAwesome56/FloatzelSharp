@@ -6,6 +6,6 @@ namespace FloatzelSharp.help
 {
     public enum Category
     {
-        Test, Dank, Help, Unsorted
+        Test, Dank, Help, Unsorted, Other
     }
 }
