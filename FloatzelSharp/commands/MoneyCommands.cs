@@ -24,11 +24,12 @@ namespace FloatzelSharp.commands {
                 mem = dink;
             }
             string uid = mem.Id.ToString();
-            if (Database.dbCheckIfExist(uid)) {
-                await ctx.RespondAsync($"{mem.Username} has {Database.dbLoadInt(uid).ToString()}{icon}");
+            if (await Database.dbCheckIfExist(uid)) {
+                var prof = await Database.dbLoadProfile(uid);
+                await ctx.RespondAsync($"{mem.Username} has {prof.bal}{icon}");
             } else {
                 await ctx.RespondAsync($"{mem.Username} has 0 {icon}");
-                Database.dbCreateAccount(uid);
+                await Database.dbCreateProfile(uid);
             }
         }
 
@@ -53,31 +54,31 @@ namespace FloatzelSharp.commands {
             string toId = mem.Id.ToString();
             string fromId = ctx.Member.Id.ToString();
             // check if the person paying even has an account
-            if (!Database.dbCheckIfExist(fromId)) {
+            if (!await Database.dbCheckIfExist(fromId)) {
                 // create an account for them
-                Database.dbCreateAccount(fromId);
+                //Database.dbCreateAccount(fromId);
                 await ctx.RespondAsync($"You do not have {amount.ToString()}{icon} to give!");
                 return;
             }
-            int frombal = Database.dbLoadInt(fromId);
+            Profile fromprof = await Database.dbLoadProfile(fromId);
             // check if they have enough money to pay
-            if (amount > frombal) {
-                await ctx.RespondAsync($"You only have {frombal.ToString()}{icon}, not the given {amount.ToString()}{icon} you wish to pay!");
+            if (amount > fromprof.bal) {
+                await ctx.RespondAsync($"You only have {fromprof.bal.ToString()}{icon}, not the given {amount.ToString()}{icon} you wish to pay!");
                 return;
             }
             // make sure the reciving user has a bank account
-             if (!Database.dbCheckIfExist(toId)) {
+             if (!await Database.dbCheckIfExist(toId)) {
                 // just make one. no biggie
-                Database.dbCreateAccount(toId);
+                await Database.dbCreateProfile(toId);
             }
-            // load tobal
-            int toBal = Database.dbLoadInt(toId);
+            // load the person being paid's profile
+            Profile toProf = await Database.dbLoadProfile(toId);
             // MATH
-            frombal -= amount;
-            toBal += amount;
+            fromprof.bal -= amount;
+            toProf.bal += amount;
             // save back to database
-            Database.dbSaveInt(fromId, frombal);
-            Database.dbSaveInt(toId, toBal);
+            await Database.dbSaveProfile(fromprof);
+            await Database.dbSaveProfile(toProf);
             await ctx.RespondAsync($"You paid {amount}{icon} to {mem.Username}!");
         }
 
@@ -85,30 +86,33 @@ namespace FloatzelSharp.commands {
         public async Task gamble(CommandContext ctx) {
             string uid = ctx.Member.Id.ToString();
             // check if they even have a bank account in the first place
-            if (!Database.dbCheckIfExist(uid)) {
+            if (!await Database.dbCheckIfExist(uid)) {
                 // make account
-                Database.dbCreateAccount(uid);
+                //Database.dbCreateAccount(uid);
                 await ctx.RespondAsync($"You do not have 5{icon} to gamble away!");
                 return;
             }
             // load balance
-            var bal = Database.dbLoadInt(uid);
+            var user = await Database.dbLoadProfile(uid);
             // do math
             var rng = Program.rand.Next(0, 20);
             var test = Program.rand.Next(0, 1);
             if (rng <= 15) {
                 await ctx.RespondAsync($"YOU LOST! I am gonna enjoy this 5{icon}");
-                Database.dbSaveInt(uid, bal - 5);
+                user.bal -= 5;
+                await Database.dbSaveProfile(user);
                 return;
             }
             if (rng == 16 || rng == 17 || rng == 18) {
                 await ctx.RespondAsync($"YOU WIN! You get your money back and 2{icon} extra");
-                Database.dbSaveInt(uid, bal + 2);
+                user.bal += 2;
+                await Database.dbSaveProfile(user);
                 return;
             }
             if (rng == 19) {
                 await ctx.RespondAsync("YOU WIN! You got triple your bet!");
-                Database.dbSaveInt(uid, bal += 5 * 3);
+                user.bal += 5 * 3;
+                await Database.dbSaveProfile(user);
                 return;
             }
             await ctx.RespondAsync("how the hell did you get here? Ezio's math must suck");
@@ -121,28 +125,32 @@ namespace FloatzelSharp.commands {
             // get user id
             string uid = ctx.Member.Id.ToString();
             // check if they have a loan already
-            if (!Database.dbCheckIfLoan(uid)) {
+            if (!await Database.dbCheckIfExist(uid)) {
                 // just give them a loan right off the bat
-                Database.dbSaveLoan(uid, Utils.GetCurrentMilli());
-                // check if they have a bank account
-                if (!Database.dbCheckIfExist(uid)) {
-                    // just save the value
-                    Database.dbCreateAccount(uid);
-                    Database.dbSaveInt(uid, amount);
-                    await ctx.RespondAsync($"You got {amount.ToString()}{icon}!");
+                await Database.dbCreateProfile(uid, amount, Utils.GetCurrentMilli());
+                await ctx.RespondAsync($"You got a loan of {amount}!");
+            } else {
+                // load profile
+                var profile = await Database.dbLoadProfile(uid);
+                // do a lot of number magic
+                double time = Utils.GetCurrentMilli();
+                double pass1 = time - profile.loantime;
+                double passed = TimeSpan.FromDays(1).TotalMilliseconds - pass1;
+
+
+                double hours = TimeSpan.FromMilliseconds(passed).TotalHours;
+                // has it been a day?
+                if (time != TimeSpan.FromMilliseconds(profile.loantime).Add(TimeSpan.FromDays(1)).TotalMilliseconds && profile.loantime < time && profile.loantime != (double) 0) {
+                    await ctx.RespondAsync($"you have to wait {hours.ToString()} more hours before you can get another loan!");
                     return;
                 } else {
-                    // load old bal
-                    var bal = Database.dbLoadInt(uid);
-                    // math
-                    bal += amount;
-                    // save it
-                    Database.dbSaveInt(uid, bal);
-                    await ctx.RespondAsync($"You got {amount.ToString()}{icon}!");
+                    // save new shit
+                    profile.bal += amount;
+                    profile.loantime = time;
+                    await ctx.RespondAsync($"you took out a loan of {amount.ToString()}");
+                    await Database.dbSaveProfile(profile);
                     return;
                 }
-            } else {
-                // do shit here
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
@@ -25,6 +26,9 @@ namespace FloatzelSharp.util
         private static String tweets = "tweets";
         private static String tagperm = "gtagperm";
         private static String tags = "tags";
+
+        // profiles??
+        private static String account = "profile";
 
 
 
@@ -63,32 +67,30 @@ namespace FloatzelSharp.util
 
         private static void makeTables() {
             // run a bunch of rethink commands
-            r.TableCreate(banktable).OptArg("primary_key", "uid").Run(thonk);
-            r.TableCreate(loantable).OptArg("primary_key", "uid").Run(thonk);
+            //r.TableCreate(banktable).OptArg("primary_key", "uid").Run(thonk);
+            r.TableCreate(account).OptArg("primary_key", "uid").Run(thonk);
+            /*r.TableCreate(loantable).OptArg("primary_key", "uid").Run(thonk);
             r.TableCreate(bloanperm).OptArg("primary_key", "uid").Run(thonk);
             r.TableCreate(stocktable).OptArg("primary_key", "sid").Run(thonk);
             r.TableCreate(tweets).OptArg("primary_key", "tid").Run(thonk);
             r.TableCreate(tagperm).OptArg("primary_key", "gid").Run(thonk);
             //r.TableCreate(tags).Run(thonk);
-            r.TableCreate(stockbuy).OptArg("primary_key", "uid").Run(thonk);
+            r.TableCreate(stockbuy).OptArg("primary_key", "uid").Run(thonk);*/
         }
 
 
-        // check if a bank account exists; also serves as account converter from 2.x db to 3.x
-        public static bool dbCheckIfExist(string id) {
-            var dank = r.Table(banktable).Get(id).Run(thonk);
+        // check if a user profile exists; also serves as bank account importer from 2.x db to 3.x
+        public static async Task<bool> dbCheckIfExist(string id) {
+            var dank = await r.Table(account).Get(id).RunAsync(thonk);
             if (dank == null) {
                 // is olddb present?
                 if (hasOld) {
                     // step 1: check if they have an account
-                    if ((bool) r.Table(banktable).Filter(r.HashMap("uid", id)).Count().Eq(1).Run(oldthonk)) {
+                    if ((bool) await r.Table(banktable).Filter(r.HashMap("uid", id)).Count().Eq(1).RunAsync(oldthonk)) {
                         // they do! load the value.
-                        var cursor = r.Table(banktable).Filter(row => row.GetField("uid").Eq(id)).GetField("bal").Run(oldthonk);
+                        var cursor = await r.Table(banktable).Filter(row => row.GetField("uid").Eq(id)).GetField("bal").RunAsync(oldthonk);
                         foreach (var i in cursor) {
-                            r.Table(banktable).Insert(r.Array(
-                            r.HashMap("uid", id)
-                                    .With("bal", i)
-                             )).Run(thonk);
+                            await Database.dbCreateProfile(id, (int) i);
                         }
                         // cool, data converted! return true
                         return true;
@@ -101,6 +103,7 @@ namespace FloatzelSharp.util
             return false;
         }
 
+        /*
         // load user bank account
         public static int dbLoadInt(string id) {
             return (int) r.Table(banktable).Get(id).GetField("bal").Run(thonk);
@@ -115,12 +118,42 @@ namespace FloatzelSharp.util
             // save it
             r.Table(banktable).Get(id).Update(r.HashMap("bal", bal)).Run(thonk);
         }
+        */
 
-        // self-explanitory: make a new bank account for a person
-        public static void dbCreateAccount(string id) {
-            r.Table(banktable).Insert(r.HashMap("uid", id).With("bal", 0)).Run(thonk);
+        // self-explanitory: make a new profile for a user
+        public static async Task dbCreateProfile(string id) {
+            Profile dank = new Profile();
+            dank.uid = id;
+            dank.bal = 0;
+            dank.loantime = (double)0;
+            await r.Table(account).Insert(dank).RunAsync(thonk);
+        }
+        public static async Task dbCreateProfile(string id, int bal) {
+            Profile dank = new Profile();
+            dank.uid = id;
+            dank.bal = bal;
+            dank.loantime = (double)0;
+            await r.Table(account).Insert(dank).RunAsync(thonk);
+        }
+        public static async Task dbCreateProfile(string id, int bal, double time) {
+            Profile Dank = new Profile();
+            Dank.uid = id;
+            Dank.bal = bal;
+            Dank.loantime = time;
+            await r.Table(account).Insert(Dank).RunAsync(thonk);
         }
 
+        // load a user profile
+        public static async Task<Profile> dbLoadProfile(string id) {
+            return await r.Table(account).Get(id).RunAsync<Profile>(thonk);
+        }
+
+        // Save a user profile
+        public static async Task dbSaveProfile(Profile dank) {
+            await r.Table(account).Get(dank.uid).Update(dank).RunAsync(thonk);
+        }
+
+        /*
         // check if a user already has a loan or not
         public static bool dbCheckIfLoan(string id) {
             var dank = r.Table(loantable).Get(id).Run(thonk);
@@ -142,5 +175,6 @@ namespace FloatzelSharp.util
         public static double dbLoadLoan(string id) {
             return (double) r.Table(loantable).Get(id).GetField("time").Run(thonk);
         }
+        */
     }
 }

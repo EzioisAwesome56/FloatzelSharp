@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace FloatzelSharp {
-    public class BankAcc {
+    public class Profile {
 
         [JsonProperty]
-        public string uid { get; private set; }
+        public string uid { get; set; }
         [JsonProperty]
-        public int bal { get; private set; }
+        public int bal { get; set; }
+        [JsonProperty]
+        public double loantime { get; set; }
     }
 }
