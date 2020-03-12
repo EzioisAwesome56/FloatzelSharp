@@ -56,7 +56,7 @@ namespace FloatzelSharp.commands {
             // check if the person paying even has an account
             if (!await Database.dbCheckIfExist(fromId)) {
                 // create an account for them
-                //Database.dbCreateAccount(fromId);
+                await Database.dbCreateProfile(fromId);
                 await ctx.RespondAsync($"You do not have {amount.ToString()}{icon} to give!");
                 return;
             }
