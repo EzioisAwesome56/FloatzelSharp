@@ -36,7 +36,7 @@ namespace FloatzelSharp
         }
 
         [Command("ping"), Description("Returns with the bot's ping."), Aliases("pong")]
-        async Task Ping(CommandContext ctx) {
+        public async Task Ping(CommandContext ctx) {
             var msg = await ctx.RespondAsync("Pinging...");
             var ping = msg.Timestamp - ctx.Message.Timestamp;
             var heartbeat = ctx.Client.Ping;
@@ -44,6 +44,12 @@ namespace FloatzelSharp
                 $"🏓 Pong! `{ping.TotalMilliseconds}ms`\n" +
                 $"💓 Heartbeat: `{heartbeat}ms`"
             );
+        }
+
+        [Command("invite"), Description("posts a link to invite the bot"), Category(Category.Other)]
+        public async Task invite(CommandContext ctx) {
+            var oof = await Config.Get();
+            await ctx.RespondAsync($"This bot's invite link is {oof.Invite}");
         }
 
 
