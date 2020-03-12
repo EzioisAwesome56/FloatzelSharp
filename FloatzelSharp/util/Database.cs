@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
+using FloatzelSharp.types;
 
 namespace FloatzelSharp.util
 {

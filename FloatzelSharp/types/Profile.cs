@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FloatzelSharp {
+namespace FloatzelSharp.types {
     public class Profile {
 
         [JsonProperty]

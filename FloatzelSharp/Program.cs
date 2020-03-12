@@ -53,6 +53,7 @@ namespace FloatzelSharp
             commands.RegisterCommands<TestCommands>();
             commands.RegisterCommands<HelpCmd>();
             commands.RegisterCommands<MoneyCommands>();
+            commands.RegisterCommands<FunCommands>();
 
             await discord.ConnectAsync();
             await Task.Delay(-1);

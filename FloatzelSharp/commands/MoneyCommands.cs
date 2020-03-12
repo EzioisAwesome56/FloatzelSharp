@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using System.Threading.Tasks;
 using FloatzelSharp.util;
 using DSharpPlus.Entities;
+using FloatzelSharp.types;
 
 namespace FloatzelSharp.commands {
     class MoneyCommands : BaseCommandModule {
