@@ -41,5 +41,29 @@ namespace FloatzelSharp.commands {
                 $"Tastes like- {taste[Program.rand.Next(taste.Length)]}");
             return;
         }
+
+        [Command("bf"), Description("Rates your boyfriend"), Aliases(new string[] { "boyfriend"}), Category(Category.Fun)]
+        public async Task bf(CommandContext ctx, [Description("name of who you want me to rate"), RemainingText()] string name = null) {
+            if (name == null) {
+                await ctx.RespondAsync("You forgot to tell me the name of whom you want me to judge!");
+                return;
+            }
+            await ctx.RespondAsync($"You asked me to rate- {name}\n" +
+                $"Rating- {Program.rand.Next(11).ToString()}/10\n" +
+                $"Do I approve- {(Program.rand.Next(2).Equals(1) ? "Yes" : "No")}");
+            return;
+        }
+
+        [Command("gf"), Description("Rates your girlfriend"), Aliases(new string[] { "girlfriend" }), Category(Category.Fun)]
+        public async Task gf(CommandContext ctx, [Description("name of who you want me to rate"), RemainingText()] string name = null) {
+            if (name == null) {
+                await ctx.RespondAsync("You forgot to tell me the name of whom you want me to judge!");
+                return;
+            }
+            await ctx.RespondAsync($"You asked me to rate- {name}\n" +
+                $"Rating- {Program.rand.Next(11).ToString()}/10\n" +
+                $"Do I approve- {(Program.rand.Next(2).Equals(1) ? "Yes" : "No")}");
+            return;
+        }
     }
 }
