@@ -113,5 +113,37 @@ namespace FloatzelSharp.commands {
             }
             await ctx.RespondAsync("how the hell did you get here? Ezio's math must suck");
         }
+
+        [Command("loan"), Description("take out an interest-free loan that you don't have to pay back"), Aliases(new string[] { "daily" }), Category(Category.Money)]
+        public async Task loan(CommandContext ctx) {
+            // generate the amount they will get
+            var amount = Program.rand.Next(1, 50);
+            // get user id
+            string uid = ctx.Member.Id.ToString();
+            // check if they have a loan already
+            if (!Database.dbCheckIfLoan(uid)) {
+                // just give them a loan right off the bat
+                Database.dbSaveLoan(uid, Utils.GetCurrentMilli());
+                // check if they have a bank account
+                if (!Database.dbCheckIfExist(uid)) {
+                    // just save the value
+                    Database.dbCreateAccount(uid);
+                    Database.dbSaveInt(uid, amount);
+                    await ctx.RespondAsync($"You got {amount.ToString()}{icon}!");
+                    return;
+                } else {
+                    // load old bal
+                    var bal = Database.dbLoadInt(uid);
+                    // math
+                    bal += amount;
+                    // save it
+                    Database.dbSaveInt(uid, bal);
+                    await ctx.RespondAsync($"You got {amount.ToString()}{icon}!");
+                    return;
+                }
+            } else {
+                // do shit here
+            }
+        }
     }
 }

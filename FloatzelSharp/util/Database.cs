@@ -50,7 +50,7 @@ namespace FloatzelSharp.util
             }
             // check for legacy database stuff
             Console.WriteLine("Floatzel is now checking for 2.x database...");
-            if ((bool)r.DbList().Contains("floatzel").Run(thonk)) {
+            if ((bool) r.DbList().Contains("floatzel").Run(thonk)) {
                 oldthonk = builder.Connect();
                 oldthonk.Use("floatzel");
                 Console.WriteLine("Floatzel found 2.x database! Will convert data as its accessed");
@@ -74,7 +74,7 @@ namespace FloatzelSharp.util
         }
 
 
-        // check if a bank account exists
+        // check if a bank account exists; also serves as account converter from 2.x db to 3.x
         public static bool dbCheckIfExist(string id) {
             var dank = r.Table(banktable).Get(id).Run(thonk);
             if (dank == null) {
@@ -116,8 +116,31 @@ namespace FloatzelSharp.util
             r.Table(banktable).Get(id).Update(r.HashMap("bal", bal)).Run(thonk);
         }
 
+        // self-explanitory: make a new bank account for a person
         public static void dbCreateAccount(string id) {
             r.Table(banktable).Insert(r.HashMap("uid", id).With("bal", 0)).Run(thonk);
+        }
+
+        // check if a user already has a loan or not
+        public static bool dbCheckIfLoan(string id) {
+            var dank = r.Table(loantable).Get(id).Run(thonk);
+            if (dank == null) {
+                // insert a blank db entry
+                r.Table(loantable).Insert(r.HashMap("uid", id).With("time", 0L)).Run(thonk);
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        // save current loan time into db
+        public static void dbSaveLoan(string id, double time) {
+            r.Table(loantable).Update(r.HashMap("uid", id).With("time", time)).Run(thonk);
+        }
+
+        // load last loan time from database
+        public static double dbLoadLoan(string id) {
+            return (double) r.Table(loantable).Get(id).GetField("time").Run(thonk);
         }
     }
 }
