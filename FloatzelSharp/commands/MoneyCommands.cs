@@ -88,12 +88,16 @@ namespace FloatzelSharp.commands {
             // check if they even have a bank account in the first place
             if (!await Database.dbCheckIfExist(uid)) {
                 // make account
-                //Database.dbCreateAccount(uid);
+                await Database.dbCreateProfile(uid);
                 await ctx.RespondAsync($"You do not have 5{icon} to gamble away!");
                 return;
             }
             // load balance
             var user = await Database.dbLoadProfile(uid);
+            if (user.bal < 5) {
+                await ctx.RespondAsync($"you do not have the required 5{icon} to gamble!");
+                return;
+            }
             // do math
             var rng = Program.rand.Next(0, 20);
             var test = Program.rand.Next(0, 1);
