@@ -22,5 +22,11 @@ namespace FloatzelSharp.commands {
                 $"🎱 Response- {replies[Program.rand.Next(replies.Length)]}");
             return;
         }
+
+        [Command("dice"), Description("rolls a dice for you"), Category(Category.Fun)]
+        public async Task roll(CommandContext ctz) {
+            var roll = Program.rand.Next(6) + 1;
+            await ctz.RespondAsync($"You rolled a {roll.ToString()}");
+        }
     }
 }

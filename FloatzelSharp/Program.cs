@@ -46,7 +46,8 @@ namespace FloatzelSharp
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
                 StringPrefixes = new string[] { config.Dev ? config.Prefix : config.Devfix },
-                EnableDefaultHelp = false
+                EnableDefaultHelp = false,
+                IgnoreExtraArguments = true
             });
             commands.CommandErrored += PrintError;
             commands.RegisterCommands<OtherCommands>();
