@@ -13,16 +13,6 @@ namespace FloatzelSharp.commands {
 
         private static string icon = "🥖";
 
-        private static bool checkBank(string id) {
-            if (!Database.dbCheckIfExist(id)) {
-                // save a 0
-                // TODO: this
-                // return false
-                return false;
-            } else {
-                return true;
-            }
-        }
 
         [Command("bal"), Description("check how much money you or someone else has"), Category(Category.Money), Priority(0)]
         public async Task bal(CommandContext ctx, [Description("Member you want to check")] DiscordMember dink = null) {
