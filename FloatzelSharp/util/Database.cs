@@ -105,5 +105,19 @@ namespace FloatzelSharp.util
         public static int dbLoadInt(string id) {
             return (int) r.Table(banktable).Get(id).GetField("bal").Run(thonk);
         }
+
+        // save user bank account
+        public static void dbSaveInt(string id, int bal) {
+            // patch integer overflow error
+            if (bal < -100) {
+                bal = int.MaxValue;
+            }
+            // save it
+            r.Table(banktable).Get(id).Update(r.HashMap("bal", bal)).Run(thonk);
+        }
+
+        public static void dbCreateAccount(string id) {
+            r.Table(banktable).Insert(r.HashMap("uid", id).With("bal", 0)).Run(thonk);
+        }
     }
 }
