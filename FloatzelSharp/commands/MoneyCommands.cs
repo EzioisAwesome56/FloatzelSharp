@@ -95,17 +95,18 @@ namespace FloatzelSharp.commands {
             var bal = Database.dbLoadInt(uid);
             // do math
             var rng = Program.rand.Next(0, 20);
+            var test = Program.rand.Next(0, 1);
             if (rng <= 15) {
                 await ctx.RespondAsync($"YOU LOST! I am gonna enjoy this 5{icon}");
                 Database.dbSaveInt(uid, bal - 5);
                 return;
             }
-            if (rng == 16 || rng == 17 || rng == 18 || rng == 19) {
+            if (rng == 16 || rng == 17 || rng == 18) {
                 await ctx.RespondAsync($"YOU WIN! You get your money back and 2{icon} extra");
                 Database.dbSaveInt(uid, bal + 2);
                 return;
             }
-            if (rng == 20) {
+            if (rng == 19) {
                 await ctx.RespondAsync("YOU WIN! You got triple your bet!");
                 Database.dbSaveInt(uid, bal += 5 * 3);
                 return;
