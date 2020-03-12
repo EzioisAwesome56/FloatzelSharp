@@ -28,5 +28,18 @@ namespace FloatzelSharp.commands {
             var roll = Program.rand.Next(6) + 1;
             await ctz.RespondAsync($"You rolled a {roll.ToString()}");
         }
+
+        [Command("eat"), Description("I will evaluate whatever you give me to eat"), Category(Category.Fun)]
+        public async Task eat(CommandContext ctx, [Description("What I shall eat"), RemainingText()] string food = null) {
+            if (food == null) {
+                await ctx.RespondAsync("You forgot to say what you want me to eat!");
+                return;
+            }
+            string[] taste = new string[] { "Chicken", "Pizza", "Fried Shrimp", "Blood", "Fried Butter", "Dank Memes", "Oxygen on crack", "Milk", "Pork" };
+            await ctx.RespondAsync($"You gave me- {food}\n" +
+                $"Rating- {Program.rand.Next(11).ToString()}/10\n" +
+                $"Tastes like- {taste[Program.rand.Next(taste.Length)]}");
+            return;
+        }
     }
 }
