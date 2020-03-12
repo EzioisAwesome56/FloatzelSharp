@@ -35,6 +35,17 @@ namespace FloatzelSharp
                 $"Memory Usage: {((Process.GetCurrentProcess().PrivateMemorySize64 / 1024) / 1024).ToString()} MB```");
         }
 
+        [Command("ping"), Description("Returns with the bot's ping."), Aliases("pong")]
+        async Task Ping(CommandContext ctx) {
+            var msg = await ctx.RespondAsync("Pinging...");
+            var ping = msg.Timestamp - ctx.Message.Timestamp;
+            var heartbeat = ctx.Client.Ping;
+            await msg.ModifyAsync(
+                $"🏓 Pong! `{ping.TotalMilliseconds}ms`\n" +
+                $"💓 Heartbeat: `{heartbeat}ms`"
+            );
+        }
+
 
     }
 }
