@@ -12,6 +12,8 @@ namespace FloatzelSharp
     class Program
     {
 
+        public static string version = "3.0";
+
         private async static Task PrintError(CommandErrorEventArgs e) {
             if (e.Exception is CommandNotFoundException) return;
             await e.Context.Channel.SendMessageAsync($"An error occured: {e.Exception.Message}");
