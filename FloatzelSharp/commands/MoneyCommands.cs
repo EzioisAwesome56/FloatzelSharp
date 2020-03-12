@@ -80,5 +80,37 @@ namespace FloatzelSharp.commands {
             Database.dbSaveInt(toId, toBal);
             await ctx.RespondAsync($"You paid {amount}{icon} to {mem.Username}!");
         }
+
+        [Command("gamble"), Description("Try your luck to win some money! One attempt costs 5🥖"), Category(Category.Money)]
+        public async Task gamble(CommandContext ctx) {
+            string uid = ctx.Member.Id.ToString();
+            // check if they even have a bank account in the first place
+            if (!Database.dbCheckIfExist(uid)) {
+                // make account
+                Database.dbCreateAccount(uid);
+                await ctx.RespondAsync($"You do not have 5{icon} to gamble away!");
+                return;
+            }
+            // load balance
+            var bal = Database.dbLoadInt(uid);
+            // do math
+            var rng = Program.rand.Next(0, 20);
+            if (rng <= 15) {
+                await ctx.RespondAsync($"YOU LOST! I am gonna enjoy this 5{icon}");
+                Database.dbSaveInt(uid, bal - 5);
+                return;
+            }
+            if (rng == 16 || rng == 17 || rng == 18 || rng == 19) {
+                await ctx.RespondAsync($"YOU WIN! You get your money back and 2{icon} extra");
+                Database.dbSaveInt(uid, bal + 2);
+                return;
+            }
+            if (rng == 20) {
+                await ctx.RespondAsync("YOU WIN! You got triple your bet!");
+                Database.dbSaveInt(uid, bal += 5 * 3);
+                return;
+            }
+            await ctx.RespondAsync("how the hell did you get here? Ezio's math must suck");
+        }
     }
 }

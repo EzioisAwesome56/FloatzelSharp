@@ -13,6 +13,7 @@ namespace FloatzelSharp
     {
 
         public static string version = "3.0";
+        public static Random rand = new Random();
 
         private async static Task PrintError(CommandErrorEventArgs e) {
             if (e.Exception is CommandNotFoundException) return;
