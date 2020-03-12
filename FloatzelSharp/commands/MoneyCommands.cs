@@ -37,7 +37,7 @@ namespace FloatzelSharp.commands {
             if (Database.dbCheckIfExist(uid)) {
                 await ctx.RespondAsync($"{mem.Username} has {Database.dbLoadInt(uid).ToString()}{icon}");
             } else {
-                await ctx.RespondAsync(mem.Username + " has 0" + icon);
+                await ctx.RespondAsync($"{mem.Username} has 0 {icon}");
                 // TODO: save a 0
             }
         }
