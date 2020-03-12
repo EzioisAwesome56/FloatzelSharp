@@ -19,6 +19,8 @@ namespace FloatzelSharp
         public string Devfix { get; private set; }
         [JsonProperty("Dev")]
         public bool Dev { get; private set; }
+        [JsonProperty("Invite")]
+        public string Invite { get; private set; }
 
         private static Config _instance;
 
