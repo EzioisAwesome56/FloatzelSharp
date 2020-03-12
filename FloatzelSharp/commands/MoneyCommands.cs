@@ -15,7 +15,7 @@ namespace FloatzelSharp.commands {
 
 
         [Command("bal"), Description("check how much money you or someone else has"), Category(Category.Money), Priority(0)]
-        public async Task bal(CommandContext ctx, [Description("Member you want to check")] DiscordMember dink = null) {
+        public async Task bal(CommandContext ctx, [Description("Member you want to check (optional)")] DiscordMember dink = null) {
             // get the id of the user
             DiscordMember mem;
             if (dink == null) {
