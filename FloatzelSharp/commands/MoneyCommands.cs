@@ -6,6 +6,7 @@ using FloatzelSharp.help;
 using DSharpPlus.CommandsNext.Attributes;
 using System.Threading.Tasks;
 using FloatzelSharp.util;
+using DSharpPlus.Entities;
 
 namespace FloatzelSharp.commands {
     class MoneyCommands : BaseCommandModule {
@@ -23,17 +24,21 @@ namespace FloatzelSharp.commands {
             }
         }
 
-        [Command("bal"), Description("check how much money you or someone else has"), Category(Category.Money)]
-        public async Task bal(CommandContext ctx) {
-            string uid = ctx.Member.Id.ToString();
-            if (!checkBank(uid)) {
-                await ctx.RespondAsync("You have 0" + icon);
-                return;
+        [Command("bal"), Description("check how much money you or someone else has"), Category(Category.Money), Priority(0)]
+        public async Task bal(CommandContext ctx, [Description("Member you want to check")] DiscordMember dink = null) {
+            // get the id of the user
+            DiscordMember mem;
+            if (dink == null) {
+                mem = ctx.Member;
+            } else {
+                mem = dink;
             }
-            // TODO: load db value.
-            var dank = Database.dbLoadInt(uid);
-            foreach (var i in dank) {
-                Console.WriteLine(i);
+            string uid = mem.Id.ToString();
+            if (Database.dbCheckIfExist(uid)) {
+                await ctx.RespondAsync($"{mem.Username} has {Database.dbLoadInt(uid).ToString()}{icon}");
+            } else {
+                await ctx.RespondAsync(mem.Username + " has 0" + icon);
+                // TODO: save a 0
             }
         }
     }

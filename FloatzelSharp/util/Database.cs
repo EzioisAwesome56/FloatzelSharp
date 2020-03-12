@@ -10,8 +10,11 @@ namespace FloatzelSharp.util
     class Database
     {
         // init rethinkdb in its whole
-        public static RethinkDB r = RethinkDB.R;
-        public static Connection thonk;
+        private static RethinkDB r = RethinkDB.R;
+        private static Connection thonk;
+        // for compatibility reasons
+        private static Connection oldthonk;
+        private static bool hasOld = false;
 
         // copy-paste from java: table names
         private static String banktable = "bank";
@@ -33,43 +36,74 @@ namespace FloatzelSharp.util
             
             Console.WriteLine("Floatzel is now loading EzioSoft RethinkDB Driver V2...");
             // check if the database exists
-            if (!(bool) r.DbList().Contains("floatzel").Run(thonk)) {
+            if (!(bool) r.DbList().Contains("FloatzelSharp").Run(thonk)) {
                 // it doesnt exist! make that database!
                 Console.WriteLine("Database not detected! creating new database...");
-                r.DbCreate("floatzel").Run(thonk);
-                thonk.Use("floatzel");
+                r.DbCreate("FloatzelSharp").Run(thonk);
+                thonk.Use("FloatzelSharp");
                 Console.WriteLine("Creating tables...");
                 makeTables();
                 Console.WriteLine("Database created!");
             } else {
-                thonk.Use("floatzel");
+                thonk.Use("FloatzelSharp");
                 Console.WriteLine("Driver loaded!");
+            }
+            // check for legacy database stuff
+            Console.WriteLine("Floatzel is now checking for 2.x database...");
+            if ((bool)r.DbList().Contains("floatzel").Run(thonk)) {
+                oldthonk = builder.Connect();
+                oldthonk.Use("floatzel");
+                Console.WriteLine("Floatzel found 2.x database! Will convert data as its accessed");
+                hasOld = true;
+            } else {
+                Console.WriteLine("Floatzel did not find 2.x databse!");
             }
         }
 
 
         private static void makeTables() {
             // run a bunch of rethink commands
-            r.TableCreate(banktable).Run(thonk);
-            r.TableCreate(loantable).Run(thonk);
-            r.TableCreate(bloanperm).Run(thonk);
-            r.TableCreate(stocktable).Run(thonk);
-            r.TableCreate(tweets).Run(thonk);
-            r.TableCreate(tagperm).Run(thonk);
-            r.TableCreate(tags).Run(thonk);
-            r.TableCreate(stockbuy).Run(thonk);
+            r.TableCreate(banktable).OptArg("primary_key", "uid").Run(thonk);
+            r.TableCreate(loantable).OptArg("primary_key", "uid").Run(thonk);
+            r.TableCreate(bloanperm).OptArg("primary_key", "uid").Run(thonk);
+            r.TableCreate(stocktable).OptArg("primary_key", "sid").Run(thonk);
+            r.TableCreate(tweets).OptArg("primary_key", "tid").Run(thonk);
+            r.TableCreate(tagperm).OptArg("primary_key", "gid").Run(thonk);
+            //r.TableCreate(tags).Run(thonk);
+            r.TableCreate(stockbuy).OptArg("primary_key", "uid").Run(thonk);
         }
 
 
         // check if a bank account exists
         public static bool dbCheckIfExist(string id) {
-            return (bool) r.Table(banktable).Filter(
-                r.HashMap("uid", id)).Count().Eq(1).Run(thonk);
+            var dank = r.Table(banktable).Get(id).Run(thonk);
+            if (dank == null) {
+                // is olddb present?
+                if (hasOld) {
+                    // step 1: check if they have an account
+                    if ((bool) r.Table(banktable).Filter(r.HashMap("uid", id)).Count().Eq(1).Run(oldthonk)) {
+                        // they do! load the value.
+                        var cursor = r.Table(banktable).Filter(row => row.GetField("uid").Eq(id)).GetField("bal").Run(oldthonk);
+                        foreach (var i in cursor) {
+                            r.Table(banktable).Insert(r.Array(
+                            r.HashMap("uid", id)
+                                    .With("bal", i)
+                             )).Run(thonk);
+                        }
+                        // cool, data converted! return true
+                        return true;
+                    }
+                }
+            } else {
+                // if its not null, theres a value! return true
+                return true;
+            }
+            return false;
         }
 
         // load user bank account
-        public static Cursor<object> dbLoadInt(string id) {
-            return r.Table(banktable).Filter(row => row.GetField("uid").Eq(id)).GetField("bal").Run(thonk);
+        public static int dbLoadInt(string id) {
+            return (int) r.Table(banktable).Get(id).GetField("bal").Run(thonk);
         }
     }
 }
