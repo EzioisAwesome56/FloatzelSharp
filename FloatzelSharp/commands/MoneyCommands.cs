@@ -172,7 +172,9 @@ namespace FloatzelSharp.commands {
             var uid = ctx.Member.Id.ToString();
             // do they even have a profile?
             if (!await Database.dbCheckIfExist(uid)) {
-                await ctx.RespondAsync("You do not own this command!");
+                await ctx.RespondAsync("You have not purchased this command! Either convert the 2.x perms or buy it!");
+                // make a profile if they dont have one
+                await Database.dbCreateProfile(uid);
                 return;
             }
             // load profile
