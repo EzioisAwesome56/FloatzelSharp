@@ -69,6 +69,7 @@ namespace FloatzelSharp.util {
         // check if we have Floatzel 2.x stocks saved
         public static bool dbCheckForOldStocks() => hasOld && r.TableList().Contains(stocktable).Run<bool>(oldthonk) && r.Table(stocktable).Count().Run<int>(oldthonk) > 0;
 
+        // Floatzel 2.x stocks converter
         public static void dbConvertStocks() {
             Console.WriteLine("Floatzel has found stocks stored in Legacy 2.x format");
             Console.WriteLine("Floatzel will now attempt to convert these stocks into the new format");
@@ -175,23 +176,6 @@ namespace FloatzelSharp.util {
             }
             return false;
         }
-
-        /*
-        // load user bank account
-        public static int dbLoadInt(string id) {
-            return (int) r.Table(banktable).Get(id).GetField("bal").Run(thonk);
-        }
-
-        // save user bank account
-        public static void dbSaveInt(string id, int bal) {
-            // patch integer overflow error
-            if (bal < -100) {
-                bal = int.MaxValue;
-            }
-            // save it
-            r.Table(banktable).Get(id).Update(r.HashMap("bal", bal)).Run(thonk);
-        }
-        */
 
         // self-explanitory: make a new profile for a user
         public static async Task dbCreateProfile(string id) {
