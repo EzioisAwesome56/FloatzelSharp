@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
 using FloatzelSharp.types;
+using System.Linq;
 
 namespace FloatzelSharp.util
 {
@@ -65,17 +66,61 @@ namespace FloatzelSharp.util
             }
         }
 
+        // check if we have Floatzel 2.x tweets stored that need to be converted
+        public static bool dbCheckForOldTweets() {
+            if (hasOld) {
+                if ((bool)r.TableList().Contains(tweets).Run(oldthonk)) {
+                    if ((int)r.Table(tweets).Count().Run(oldthonk) > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        // Floatzel 2.x tweet converter
+        public static void dbConvertTweets() {
+            Console.WriteLine("Floatzel has found tweets stored in Floatzel 2.x format.");
+            Console.WriteLine("Floatzel will now convert tweets to newer 3.0 format. This may take some time");
+            // step 1: load the total amount of tweets we need to convert
+            int total = (int)r.Table(tweets).Count().Run(oldthonk);
+            Console.WriteLine($"Total number of tweets is {total.ToString()}");
+            var count = 1;
+            while (count <= total) {
+                // step 2: obain tweet
+                Cursor<string> cursor = r.Table(tweets).Filter(r.HashMap("tid", count)).GetField("txt").Run<string>(oldthonk);
+                // step 3: create new tweet object
+                Tweet bird = new Tweet();
+                bird.tid = count.ToString();
+                List<string> list = cursor.ToList<string>();
+                bird.txt = list[0];
+                // step 4: save tweet object into new database
+                r.Table(tweets).Insert(bird).Run(thonk);
+                Console.WriteLine($"Tweet ID {count} converted!");
+                // step 5: increment the counter
+                count++;
+            }
+            // step 6: delete the old tweets table
+            r.TableDrop(tweets).Run(oldthonk);
+            Console.WriteLine("Floatzel has converted all tweets!");
+        }
+
 
         private static void makeTables() {
             // run a bunch of rethink commands
             //r.TableCreate(banktable).OptArg("primary_key", "uid").Run(thonk);
             r.TableCreate(account).OptArg("primary_key", "uid").Run(thonk);
+            r.TableCreate(tweets).OptArg("primary_key", "tid").Run(thonk);
             /*r.TableCreate(loantable).OptArg("primary_key", "uid").Run(thonk);
             r.TableCreate(bloanperm).OptArg("primary_key", "uid").Run(thonk);
             r.TableCreate(stocktable).OptArg("primary_key", "sid").Run(thonk);
-            r.TableCreate(tweets).OptArg("primary_key", "tid").Run(thonk);
             r.TableCreate(tagperm).OptArg("primary_key", "gid").Run(thonk);
-            //r.TableCreate(tags).Run(thonk);
+            r.TableCreate(tags).Run(thonk);
             r.TableCreate(stockbuy).OptArg("primary_key", "uid").Run(thonk);*/
         }
 
@@ -89,10 +134,9 @@ namespace FloatzelSharp.util
                     // step 1: check if they have an account
                     if ((bool) await r.Table(banktable).Filter(r.HashMap("uid", id)).Count().Eq(1).RunAsync(oldthonk)) {
                         // they do! load the value.
-                        var cursor = await r.Table(banktable).Filter(row => row.GetField("uid").Eq(id)).GetField("bal").RunAsync(oldthonk);
-                        foreach (var i in cursor) {
-                            await Database.dbCreateProfile(id, (int) i);
-                        }
+                        Cursor<int> cursor = await r.Table(banktable).Filter(row => row.GetField("uid").Eq(id)).GetField("bal").RunAsync<int>(oldthonk);
+                        List<int> list = cursor.ToList<int>();
+                        await Database.dbCreateProfile(id, list[0]);
                         // cool, data converted! return true
                         return true;
                     }

@@ -27,6 +27,10 @@ namespace FloatzelSharp
         static void Main(string[] args)
         {
             Database.dbinit();
+            // check if we have old tweets to convert
+            if (Database.dbCheckForOldTweets()) {
+                Database.dbConvertTweets();
+            }
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
@@ -55,6 +59,7 @@ namespace FloatzelSharp
             commands.RegisterCommands<HelpCmd>();
             commands.RegisterCommands<MoneyCommands>();
             commands.RegisterCommands<FunCommands>();
+            commands.RegisterCommands<OwnerCommands>();
 
             await discord.ConnectAsync();
             await Task.Delay(-1);
