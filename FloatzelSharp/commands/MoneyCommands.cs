@@ -169,14 +169,39 @@ namespace FloatzelSharp.commands {
 
         [Command("betterloan"), Aliases(new string[] { "bloan" }), Description("take out a bigger loan, no interest or need to pay it back!"), Category(Category.Money)]
         public async Task betterloan(CommandContext ctx) {
+            var uid = ctx.Member.Id.ToString();
+            // do they even have a profile?
+            if (!await Database.dbCheckIfExist(uid)) {
+                await ctx.RespondAsync("You do not own this command!");
+                return;
+            }
             // load profile
-            var prof = await Database.dbLoadProfile(ctx.Member.Id.ToString());
+            var prof = await Database.dbLoadProfile(uid);
             if (!prof.bloan) {
                 await ctx.RespondAsync("You have not purchased this command! Either convert the 2.x perms or buy it!");
                 return;
             }
-            // TODO: finish this
-            await ctx.RespondAsync("you own betterloaan");
+            // we assume they already have an account if they got here
+            // just skip right to loan processing
+            var amount = Program.rand.Next(200) + 50;
+            double time = Utils.GetCurrentMilli();
+            double pass1 = time - prof.loantime;
+            double passed = TimeSpan.FromDays(1).TotalMilliseconds - pass1;
+
+
+            double hours = TimeSpan.FromMilliseconds(passed).TotalHours;
+            // has it been a day?
+            if (time != TimeSpan.FromMilliseconds(prof.loantime).Add(TimeSpan.FromDays(1)).TotalMilliseconds && prof.loantime < time && prof.loantime != (double)0) {
+                await ctx.RespondAsync($"you have to wait {hours.ToString()} more hours before you can get another loan!");
+                return;
+            } else {
+                // save new shit
+                prof.bal += amount;
+                prof.loantime = time;
+                await ctx.RespondAsync($"you took out a loan of {amount.ToString()}");
+                await Database.dbSaveProfile(prof);
+                return;
+            }
         }
     }
 }
