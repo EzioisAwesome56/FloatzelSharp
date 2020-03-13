@@ -16,6 +16,7 @@ namespace FloatzelSharp.commands {
                 await ctx.RespondAsync("You forgot to provide a question silly!");
                 return;
             }
+            question = question.Replace("@everyone", "at everyone").Replace("@here", "at here");
             string[] replies = new string[] { "I say no!", "I don't care", "I do not understand!", "Sure thing pal!", "The star align for you!", "Please try again!", "8ball.exe has crashed",
                 "Why did you ask me this?", "NOPE!", "Commit yes.exe" };
             await ctx.RespondAsync($"You asked- {question}\n" +
@@ -35,6 +36,7 @@ namespace FloatzelSharp.commands {
                 await ctx.RespondAsync("You forgot to say what you want me to eat!");
                 return;
             }
+            food = food.Replace("@everyone", "at everyone").Replace("@here", "at here");
             string[] taste = new string[] { "Chicken", "Pizza", "Fried Shrimp", "Blood", "Fried Butter", "Dank Memes", "Oxygen on crack", "Milk", "Pork" };
             await ctx.RespondAsync($"You gave me- {food}\n" +
                 $"Rating- {Program.rand.Next(11).ToString()}/10\n" +
@@ -48,6 +50,7 @@ namespace FloatzelSharp.commands {
                 await ctx.RespondAsync("You forgot to tell me the name of whom you want me to judge!");
                 return;
             }
+            name = name.Replace("@everyone", "at everyone").Replace("@here", "at here");
             await ctx.RespondAsync($"You asked me to rate- {name}\n" +
                 $"Rating- {Program.rand.Next(11).ToString()}/10\n" +
                 $"Do I approve- {(Program.rand.Next(2).Equals(1) ? "Yes" : "No")}");
@@ -60,6 +63,7 @@ namespace FloatzelSharp.commands {
                 await ctx.RespondAsync("You forgot to tell me the name of whom you want me to judge!");
                 return;
             }
+            name = name.Replace("@everyone", "at everyone").Replace("@here", "at here");
             await ctx.RespondAsync($"You asked me to rate- {name}\n" +
                 $"Rating- {Program.rand.Next(11).ToString()}/10\n" +
                 $"Do I approve- {(Program.rand.Next(2).Equals(1) ? "Yes" : "No")}");

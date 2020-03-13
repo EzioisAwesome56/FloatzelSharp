@@ -18,7 +18,7 @@ namespace FloatzelSharp.commands {
             return;
         }
 
-        [Command("box"), Priority(1), Description("used to purcahse lootboxes.")]
+        [Command("box"), Priority(0), Description("used to purcahse lootboxes.")]
         public async Task box(CommandContext ctx) {
             await ctx.RespondAsync("We have several lootboxes up for sale\n" +
                 $"Teir 1 (t1)- 20{icon}\n" +
@@ -29,13 +29,15 @@ namespace FloatzelSharp.commands {
             return;
         }
 
-        [Command("box"), Priority(0), Description("used to purcahse lootboxes.")]
+        [Command("box"), Priority(1), Description("used to purcahse lootboxes.")]
         public async Task box(CommandContext ctx, [Description("the type of box you wish to buy")] string type = null) {
             // check if they even gave a type of box
             if (type == null) {
                 await ctx.RespondAsync("You forgot to say what type of box you wish to buy!");
                 return;
             }
+            // filter out pings
+            type = type.Replace("@everyone", "at everyone").Replace("@here", "at here");
             // check to make sure a valid type was set
             if (type != "t1" || type != "t2" || type != "t3" || type != "t4" || type != "r") {
                 await ctx.RespondAsync($"{type} is not a valid lootbox!");
