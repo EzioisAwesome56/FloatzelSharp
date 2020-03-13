@@ -203,5 +203,10 @@ namespace FloatzelSharp.commands {
                 return;
             }
         }
+
+        [Command("shop"), Description("spend your bread here!"), Category(Category.Money)]
+        public async Task shop(CommandContext ctx) {
+            // do stuff here
+        }
     }
 }

@@ -30,6 +30,7 @@ namespace FloatzelSharp
             if (_instance == null)
             {
                 using var fs = File.OpenRead("../../../../config.json");
+                //using var fs = File.OpenRead($"{System.AppDomain.CurrentDomain.BaseDirectory}/config.json");
                 using var sr = new StreamReader(fs, new UTF8Encoding(false));
                 return _instance = JsonConvert.DeserializeObject<Config>(await sr.ReadToEndAsync());
             }

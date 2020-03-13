@@ -200,6 +200,7 @@ namespace FloatzelSharp.util {
             dank.bal = 0;
             dank.loantime = (double)0;
             dank.bloan = false;
+            dank.boxes = new int[] { 0, 0, 0, 0 };
             await r.Table(account).Insert(dank).RunAsync(thonk);
         }
         public static async Task dbCreateProfile(string id, int bal) {
@@ -208,6 +209,7 @@ namespace FloatzelSharp.util {
             dank.bal = bal;
             dank.loantime = (double)0;
             dank.bloan = false;
+            dank.boxes = new int[] { 0, 0, 0, 0 };
             await r.Table(account).Insert(dank).RunAsync(thonk);
         }
         public static async Task dbCreateProfile(string id, int bal, double time) {
@@ -215,7 +217,7 @@ namespace FloatzelSharp.util {
             Dank.uid = id;
             Dank.bal = bal;
             Dank.loantime = time;
-            Dank.bloan = false;
+            Dank.boxes = new int[] { 0, 0, 0, 0 };
             await r.Table(account).Insert(Dank).RunAsync(thonk);
         }
 
