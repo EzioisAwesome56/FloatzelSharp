@@ -67,21 +67,7 @@ namespace FloatzelSharp.util
         }
 
         // check if we have Floatzel 2.x tweets stored that need to be converted
-        public static bool dbCheckForOldTweets() {
-            if (hasOld) {
-                if ((bool)r.TableList().Contains(tweets).Run(oldthonk)) {
-                    if ((int)r.Table(tweets).Count().Run(oldthonk) > 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
+        public static bool dbCheckForOldTweets() => hasOld && r.TableList().Contains(tweets).Run<bool>(oldthonk) && r.Table(tweets).Count().Run<int>(oldthonk) > 0;
 
         // check if we have Floatzel 2.x stocks saved
         public static bool dbCheckForOldStocks() => hasOld && r.TableList().Contains(stocktable).Run<bool>(oldthonk) && r.Table(stocktable).Count().Run<int>(oldthonk) > 0;
