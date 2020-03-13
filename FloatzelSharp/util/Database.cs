@@ -88,7 +88,7 @@ namespace FloatzelSharp.util
 
         public static void dbConvertStocks() {
             Console.WriteLine("Floatzel has found stocks stored in Legacy 2.x format");
-            Console.WriteLine("Floatzel will not attempt to convert these stocks into the new format");
+            Console.WriteLine("Floatzel will now attempt to convert these stocks into the new format");
             // step 1: load how many stocks are present
             int total = r.Table(stocktable).Count().Run<int>(oldthonk);
             Console.WriteLine($"Total number of stocks is {total.ToString()}");
