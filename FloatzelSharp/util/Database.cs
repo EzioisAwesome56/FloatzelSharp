@@ -83,6 +83,51 @@ namespace FloatzelSharp.util
             }
         }
 
+        // check if we have Floatzel 2.x stocks saved
+        public static bool dbCheckForOldStocks() => hasOld && r.TableList().Contains(stocktable).Run<bool>(oldthonk) && r.Table(stocktable).Count().Run<int>(oldthonk) > 0;
+
+        public static void dbConvertStocks() {
+            Console.WriteLine("Floatzel has found stocks stored in Legacy 2.x format");
+            Console.WriteLine("Floatzel will not attempt to convert these stocks into the new format");
+            // step 1: load how many stocks are present
+            int total = r.Table(stocktable).Count().Run<int>(oldthonk);
+            Console.WriteLine($"Total number of stocks is {total.ToString()}");
+            var count = 1;
+            while (count <= total) {
+                Cursor<int> cur;
+                List<int> list;
+                // step 2: create new Stock object
+                Stock dank = new Stock();
+                // step 3: load all data required into stock object
+                dank.sid = count.ToString();
+                // step 4: load diff
+                cur = r.Table(stocktable).Filter(r.HashMap("sid", count)).GetField("diff").Run<int>(oldthonk);
+                list = cur.ToList<int>();
+                dank.diff = list.Single<int>() ;
+                // step 5: load price
+                cur = r.Table(stocktable).Filter(r.HashMap("sid", count)).GetField("price").Run<int>(oldthonk);
+                list = cur.ToList<int>();
+                dank.price = list.Single<int>();
+                // step 6: load units
+                cur = r.Table(stocktable).Filter(r.HashMap("sid", count)).GetField("units").Run<int>(oldthonk);
+                list = cur.ToList<int>();
+                dank.units = list.Single<int>();
+                // step 7: load name
+                Cursor<string> namecur = r.Table(stocktable).Filter(r.HashMap("sid", count)).GetField("name").Run<string>(oldthonk);
+                List<string> namelist = namecur.ToList<string>();
+                dank.name = namelist.Single<string>();
+                // step 8: save stock object to rethinkdb
+                r.Table(stocktable).Insert(dank).Run(thonk);
+                // step 9: inc counter
+                Console.WriteLine($"Converted Stock {count.ToString()}");
+                count++;
+            }
+            // step 10: drop the old ass table
+            r.TableDrop(stocktable).Run(oldthonk);
+            // done!
+            Console.WriteLine("Floatzel has finished converting the stocks!");
+        }
+
         // Floatzel 2.x tweet converter
         public static void dbConvertTweets() {
             Console.WriteLine("Floatzel has found tweets stored in Floatzel 2.x format.");
@@ -116,9 +161,9 @@ namespace FloatzelSharp.util
             //r.TableCreate(banktable).OptArg("primary_key", "uid").Run(thonk);
             r.TableCreate(account).OptArg("primary_key", "uid").Run(thonk);
             r.TableCreate(tweets).OptArg("primary_key", "tid").Run(thonk);
+            r.TableCreate(stocktable).OptArg("primary_key", "sid").Run(thonk);
             /*r.TableCreate(loantable).OptArg("primary_key", "uid").Run(thonk);
             r.TableCreate(bloanperm).OptArg("primary_key", "uid").Run(thonk);
-            r.TableCreate(stocktable).OptArg("primary_key", "sid").Run(thonk);
             r.TableCreate(tagperm).OptArg("primary_key", "gid").Run(thonk);
             r.TableCreate(tags).Run(thonk);
             r.TableCreate(stockbuy).OptArg("primary_key", "uid").Run(thonk);*/

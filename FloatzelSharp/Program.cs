@@ -31,6 +31,9 @@ namespace FloatzelSharp
             if (Database.dbCheckForOldTweets()) {
                 Database.dbConvertTweets();
             }
+            if (Database.dbCheckForOldStocks()) {
+                Database.dbConvertStocks();
+            }
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
