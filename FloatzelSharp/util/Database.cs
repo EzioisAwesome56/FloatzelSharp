@@ -8,10 +8,8 @@ using RethinkDb.Driver.Net;
 using FloatzelSharp.types;
 using System.Linq;
 
-namespace FloatzelSharp.util
-{
-    class Database
-    {
+namespace FloatzelSharp.util {
+    class Database {
         // init rethinkdb in its whole
         private static RethinkDB r = RethinkDB.R;
         private static Connection thonk;
@@ -34,15 +32,14 @@ namespace FloatzelSharp.util
 
 
 
-        public static void dbinit()
-        {
+        public static void dbinit() {
             Connection.Builder builder = r.Connection().Hostname("localhost").Port(28015);
             // connect
             thonk = builder.Connect();
-            
+
             Console.WriteLine("Floatzel is now loading EzioSoft RethinkDB Driver V2...");
             // check if the database exists
-            if (!(bool) r.DbList().Contains("FloatzelSharp").Run(thonk)) {
+            if (!(bool)r.DbList().Contains("FloatzelSharp").Run(thonk)) {
                 // it doesnt exist! make that database!
                 Console.WriteLine("Database not detected! creating new database...");
                 r.DbCreate("FloatzelSharp").Run(thonk);
@@ -56,7 +53,7 @@ namespace FloatzelSharp.util
             }
             // check for legacy database stuff
             Console.WriteLine("Floatzel is now checking for 2.x database...");
-            if ((bool) r.DbList().Contains("floatzel").Run(thonk)) {
+            if ((bool)r.DbList().Contains("floatzel").Run(thonk)) {
                 oldthonk = builder.Connect();
                 oldthonk.Use("floatzel");
                 Console.WriteLine("Floatzel found 2.x database! Will convert data as its accessed");
@@ -89,7 +86,7 @@ namespace FloatzelSharp.util
                 // step 4: load diff
                 cur = r.Table(stocktable).Filter(r.HashMap("sid", count)).GetField("diff").Run<int>(oldthonk);
                 list = cur.ToList<int>();
-                dank.diff = list.Single<int>() ;
+                dank.diff = list.Single<int>();
                 // step 5: load price
                 cur = r.Table(stocktable).Filter(r.HashMap("sid", count)).GetField("price").Run<int>(oldthonk);
                 list = cur.ToList<int>();
@@ -163,7 +160,7 @@ namespace FloatzelSharp.util
                 // is olddb present?
                 if (hasOld) {
                     // step 1: check if they have an account
-                    if ((bool) await r.Table(banktable).Filter(r.HashMap("uid", id)).Count().Eq(1).RunAsync(oldthonk)) {
+                    if ((bool)await r.Table(banktable).Filter(r.HashMap("uid", id)).Count().Eq(1).RunAsync(oldthonk)) {
                         // they do! load the value.
                         Cursor<int> cursor = await r.Table(banktable).Filter(row => row.GetField("uid").Eq(id)).GetField("bal").RunAsync<int>(oldthonk);
                         List<int> list = cursor.ToList<int>();
@@ -202,6 +199,7 @@ namespace FloatzelSharp.util
             dank.uid = id;
             dank.bal = 0;
             dank.loantime = (double)0;
+            dank.bloan = false;
             await r.Table(account).Insert(dank).RunAsync(thonk);
         }
         public static async Task dbCreateProfile(string id, int bal) {
@@ -209,6 +207,7 @@ namespace FloatzelSharp.util
             dank.uid = id;
             dank.bal = bal;
             dank.loantime = (double)0;
+            dank.bloan = false;
             await r.Table(account).Insert(dank).RunAsync(thonk);
         }
         public static async Task dbCreateProfile(string id, int bal, double time) {
@@ -216,6 +215,7 @@ namespace FloatzelSharp.util
             Dank.uid = id;
             Dank.bal = bal;
             Dank.loantime = time;
+            Dank.bloan = false;
             await r.Table(account).Insert(Dank).RunAsync(thonk);
         }
 
@@ -229,28 +229,12 @@ namespace FloatzelSharp.util
             await r.Table(account).Get(dank.uid).Update(dank).RunAsync(thonk);
         }
 
-        /*
-        // check if a user already has a loan or not
-        public static bool dbCheckIfLoan(string id) {
-            var dank = r.Table(loantable).Get(id).Run(thonk);
-            if (dank == null) {
-                // insert a blank db entry
-                r.Table(loantable).Insert(r.HashMap("uid", id).With("time", 0L)).Run(thonk);
-                return false;
-            } else {
-                return true;
+        // convert old permissions into new permissions
+        public static async Task<Profile> dbConvertPerms(Profile dank) {
+            if (await r.Table(bloanperm).Filter(r.HashMap("uid", dank.uid)).Count().Eq(1).RunAsync<bool>(oldthonk)) {
+                dank.bloan = true;
             }
+            return dank;
         }
-
-        // save current loan time into db
-        public static void dbSaveLoan(string id, double time) {
-            r.Table(loantable).Update(r.HashMap("uid", id).With("time", time)).Run(thonk);
-        }
-
-        // load last loan time from database
-        public static double dbLoadLoan(string id) {
-            return (double) r.Table(loantable).Get(id).GetField("time").Run(thonk);
-        }
-        */
     }
 }

@@ -68,7 +68,7 @@ namespace FloatzelSharp.commands {
                 return;
             }
             // make sure the reciving user has a bank account
-             if (!await Database.dbCheckIfExist(toId)) {
+            if (!await Database.dbCheckIfExist(toId)) {
                 // just make one. no biggie
                 await Database.dbCreateProfile(toId);
             }
@@ -145,7 +145,7 @@ namespace FloatzelSharp.commands {
 
                 double hours = TimeSpan.FromMilliseconds(passed).TotalHours;
                 // has it been a day?
-                if (time != TimeSpan.FromMilliseconds(profile.loantime).Add(TimeSpan.FromDays(1)).TotalMilliseconds && profile.loantime < time && profile.loantime != (double) 0) {
+                if (time != TimeSpan.FromMilliseconds(profile.loantime).Add(TimeSpan.FromDays(1)).TotalMilliseconds && profile.loantime < time && profile.loantime != (double)0) {
                     await ctx.RespondAsync($"you have to wait {hours.ToString()} more hours before you can get another loan!");
                     return;
                 } else {
@@ -157,6 +157,26 @@ namespace FloatzelSharp.commands {
                     return;
                 }
             }
+        }
+
+        [Command("convertPerms"), Description("Previously bought a command in 2.x? use this to restore your purcahse!"), Category(Category.Money), Aliases(new string[] { "convert" })]
+        public async Task convertPerms(CommandContext ctx) {
+            await ctx.RespondAsync("Your request has been acknowledged by the system. Please wait a minute or 2 for the process to complete before trying paid commands again");
+            var dink = await Database.dbLoadProfile(ctx.Member.Id.ToString());
+            var update = await Database.dbConvertPerms(dink);
+            await Database.dbSaveProfile(update);
+        }
+
+        [Command("betterloan"), Aliases(new string[] { "bloan" }), Description("take out a bigger loan, no interest or need to pay it back!"), Category(Category.Money)]
+        public async Task betterloan(CommandContext ctx) {
+            // load profile
+            var prof = await Database.dbLoadProfile(ctx.Member.Id.ToString());
+            if (!prof.bloan) {
+                await ctx.RespondAsync("You have not purchased this command! Either convert the 2.x perms or buy it!");
+                return;
+            }
+            // TODO: finish this
+            await ctx.RespondAsync("you own betterloaan");
         }
     }
 }

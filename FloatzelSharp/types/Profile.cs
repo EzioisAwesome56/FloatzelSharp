@@ -12,5 +12,7 @@ namespace FloatzelSharp.types {
         public int bal { get; set; }
         [JsonProperty]
         public double loantime { get; set; }
+        [JsonProperty]
+        public bool bloan { get; set; }
     }
 }
