@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FloatzelSharp {
+namespace FloatzelSharp.util {
     class Utils {
 
         // for use with loans
