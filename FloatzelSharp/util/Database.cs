@@ -35,9 +35,8 @@ namespace FloatzelSharp.util {
         public static void dbinit() {
             Connection.Builder builder = r.Connection().Hostname("localhost").Port(28015);
             // connect
-            thonk = builder.Connect();
-
             Console.WriteLine("Floatzel is now loading EzioSoft RethinkDB Driver V2...");
+            thonk = builder.Connect();
             // check if the database exists
             if (!(bool)r.DbList().Contains("FloatzelSharp").Run(thonk)) {
                 // it doesnt exist! make that database!
