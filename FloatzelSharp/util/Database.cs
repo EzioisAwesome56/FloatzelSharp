@@ -216,6 +216,7 @@ namespace FloatzelSharp.util {
             Profile Dank = new Profile();
             Dank.uid = id;
             Dank.bal = bal;
+            Dank.bloan = false;
             Dank.loantime = time;
             Dank.boxes = new int[] { 0, 0, 0, 0 };
             await r.Table(account).Insert(Dank).RunAsync(thonk);
