@@ -30,20 +30,20 @@ namespace FloatzelSharp.commands {
         public async Task dank(CommandContext ctx) {
             await ctx.TriggerTypingAsync();
 
-            WebClient client = new WebClient();
-            client.OpenReadCompleted += (_, __) => client.Dispose();
-            Stream stream = await client.OpenReadTaskAsync(new Uri(ctx.User.AvatarUrl));
-            IMagickImage ava = new MagickImage(stream);
-            Stream streamm = new MemoryStream();
-            IMagickImage img = new MagickImage(MagickColor.FromRgba(255, 0, 0, 255), ava.Width, ava.Height);
-            img.Format = MagickFormat.Png64;
-            img.Composite(ava, 50, 50, CompositeOperator.SrcOver);
-            var memory = new MemoryStream(img.ToByteArray());
-            await ctx.RespondWithFileAsync("test.png", memory, "test");
-            // Dispose of everything used
-            await memory.DisposeAsync();
-            await stream.DisposeAsync();
-            img.Dispose();
+            using (var client = new WebClient()) {
+                Stream stream = await client.OpenReadTaskAsync(new Uri(ctx.User.AvatarUrl));
+                IMagickImage ava = new MagickImage(stream);
+                Stream streamm = new MemoryStream();
+                IMagickImage img = new MagickImage(MagickColor.FromRgba(255, 0, 0, 255), ava.Width, ava.Height);
+                img.Format = MagickFormat.Png64;
+                img.Composite(ava, 50, 50, CompositeOperator.SrcOver);
+                var memory = new MemoryStream(img.ToByteArray());
+                await ctx.RespondWithFileAsync("test.png", memory, "test");
+                // Dispose of everything used
+                await memory.DisposeAsync();
+                await stream.DisposeAsync();
+                img.Dispose();
+            }
         }
 
         [Command("wall"), Description("make a wall from an attachment"), Category(Category.Image)]
@@ -63,20 +63,20 @@ namespace FloatzelSharp.commands {
                 dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
-            WebClient client = new WebClient();
-            client.OpenReadCompleted += (_, __) => client.Dispose();
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
-            IMagickImage img = new MagickImage(stream);
-            img.VirtualPixelMethod = VirtualPixelMethod.Tile;
-            img.Resize(512, 512);
-            img.Distort(DistortMethod.Perspective,  0, 0, 57, 42, 0, 128, 63, 130, 128, 0, 140, 60, 128, 128, 140, 140);
-            img.Format = MagickFormat.Png64;
-            var memory = new MemoryStream(img.ToByteArray());
-            await ctx.RespondWithFileAsync("wall.png", memory);
-            // Dispose of everything used
-            await memory.DisposeAsync();
-            await stream.DisposeAsync();
-            img.Dispose();
+            using (var client = new WebClient()) {
+                Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
+                IMagickImage img = new MagickImage(stream);
+                img.VirtualPixelMethod = VirtualPixelMethod.Tile;
+                img.Resize(512, 512);
+                img.Distort(DistortMethod.Perspective, 0, 0, 57, 42, 0, 128, 63, 130, 128, 0, 140, 60, 128, 128, 140, 140);
+                img.Format = MagickFormat.Png64;
+                var memory = new MemoryStream(img.ToByteArray());
+                await ctx.RespondWithFileAsync("wall.png", memory);
+                // Dispose of everything used
+                await memory.DisposeAsync();
+                await stream.DisposeAsync();
+                img.Dispose();
+            }
         }
 
         [Command("swirl"), Description("swirls an image. Incredible"), Category(Category.Image)]
@@ -96,18 +96,18 @@ namespace FloatzelSharp.commands {
                 dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
-            WebClient client = new WebClient();
-            client.OpenReadCompleted += (_, __) => client.Dispose();
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
-            IMagickImage img = new MagickImage(stream);
-            img.Swirl((double)180);
-            img.Format = MagickFormat.Png64;
-            var memory = new MemoryStream(img.ToByteArray());
-            await ctx.RespondWithFileAsync("swirl.png", memory);
-            // Dispose of everything used
-            await memory.DisposeAsync();
-            await stream.DisposeAsync();
-            img.Dispose();
+            using (var client = new WebClient()) {
+                Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
+                IMagickImage img = new MagickImage(stream);
+                img.Swirl((double)180);
+                img.Format = MagickFormat.Png64;
+                var memory = new MemoryStream(img.ToByteArray());
+                await ctx.RespondWithFileAsync("swirl.png", memory);
+                // Dispose of everything used
+                await memory.DisposeAsync();
+                await stream.DisposeAsync();
+                img.Dispose();
+            }
         }
 
         [Command("jpeg"), Description("make any image into an authentic JPEG"), Category(Category.Image)]
@@ -127,19 +127,19 @@ namespace FloatzelSharp.commands {
                 dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
-            WebClient client = new WebClient();
-            client.OpenReadCompleted += (_, __) => client.Dispose();
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
-            IMagickImage img = new MagickImage(stream);
-            img.Format = MagickFormat.Jpeg;
-            img.Quality = 0;
-            img.Quality = -5;
-            var memory = new MemoryStream(img.ToByteArray());
-            await ctx.RespondWithFileAsync("jpeg.jpg", memory);
-            // Dispose of everything used
-            await memory.DisposeAsync();
-            await stream.DisposeAsync();
-            img.Dispose();
+            using (var client = new WebClient()) {
+                Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
+                IMagickImage img = new MagickImage(stream);
+                img.Format = MagickFormat.Jpeg;
+                img.Quality = 0;
+                img.Quality = -5;
+                var memory = new MemoryStream(img.ToByteArray());
+                await ctx.RespondWithFileAsync("jpeg.jpg", memory);
+                // Dispose of everything used
+                await memory.DisposeAsync();
+                await stream.DisposeAsync();
+                img.Dispose();
+            }
            
         }
 
@@ -160,19 +160,19 @@ namespace FloatzelSharp.commands {
                 dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
-            WebClient client = new WebClient();
-            client.OpenReadCompleted += (_, __) => client.Dispose();
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
-            IMagickImage img = new MagickImage(stream);
-            img.Resize(1, 1);
-            img.Resize(200, 200);
-            img.Format = MagickFormat.Png64;
-            var memory = new MemoryStream(img.ToByteArray());
-            await ctx.RespondWithFileAsync("jpeg.jpg", memory);
-            // Dispose of everything used
-            await memory.DisposeAsync();
-            await stream.DisposeAsync();
-            img.Dispose();
+            using (var client = new WebClient()) {
+                Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
+                IMagickImage img = new MagickImage(stream);
+                img.Resize(1, 1);
+                img.Resize(200, 200);
+                img.Format = MagickFormat.Png64;
+                var memory = new MemoryStream(img.ToByteArray());
+                await ctx.RespondWithFileAsync("jpeg.jpg", memory);
+                // Dispose of everything used
+                await memory.DisposeAsync();
+                await stream.DisposeAsync();
+                img.Dispose();
+            }
         }
 
         [Command("explode"), Description("explodes an image"), Category(Category.Image)]
@@ -192,18 +192,18 @@ namespace FloatzelSharp.commands {
                 dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
-            WebClient client = new WebClient();
-            client.OpenReadCompleted += (_, __) => client.Dispose();
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
-            IMagickImage img = new MagickImage(stream);
-            img.Implode(-2, PixelInterpolateMethod.Bilinear);
-            img.Format = MagickFormat.Png64;
-            var memory = new MemoryStream(img.ToByteArray());
-            await ctx.RespondWithFileAsync("explode.png", memory);
-            // Dispose of everything used
-            await memory.DisposeAsync();
-            await stream.DisposeAsync();
-            img.Dispose();
+            using (var client = new WebClient()) {
+                Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
+                IMagickImage img = new MagickImage(stream);
+                img.Implode(-2, PixelInterpolateMethod.Bilinear);
+                img.Format = MagickFormat.Png64;
+                var memory = new MemoryStream(img.ToByteArray());
+                await ctx.RespondWithFileAsync("explode.png", memory);
+                // Dispose of everything used
+                await memory.DisposeAsync();
+                await stream.DisposeAsync();
+                img.Dispose();
+            }
         }
 
         [Command("implode"), Description("implodes an image"), Category(Category.Image)]
@@ -223,18 +223,18 @@ namespace FloatzelSharp.commands {
                 dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
-            WebClient client = new WebClient();
-            client.OpenReadCompleted += (_, __) => client.Dispose();
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
-            IMagickImage img = new MagickImage(stream);
-            img.Implode(1, PixelInterpolateMethod.Bilinear);
-            img.Format = MagickFormat.Png64;
-            var memory = new MemoryStream(img.ToByteArray());
-            await ctx.RespondWithFileAsync("implode.png", memory);
-            // Dispose of everything used
-            await memory.DisposeAsync();
-            await stream.DisposeAsync();
-            img.Dispose();
+            using (var client = new WebClient()) {
+                Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
+                IMagickImage img = new MagickImage(stream);
+                img.Implode(1, PixelInterpolateMethod.Bilinear);
+                img.Format = MagickFormat.Png64;
+                var memory = new MemoryStream(img.ToByteArray());
+                await ctx.RespondWithFileAsync("implode.png", memory);
+                // Dispose of everything used
+                await memory.DisposeAsync();
+                await stream.DisposeAsync();
+                img.Dispose();
+            }
         }
     }
 }
