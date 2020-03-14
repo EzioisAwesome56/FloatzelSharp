@@ -31,6 +31,7 @@ namespace FloatzelSharp.commands {
             await ctx.TriggerTypingAsync();
 
             WebClient client = new WebClient();
+            client.OpenReadCompleted += (_, __) => client.Dispose();
             Stream stream = await client.OpenReadTaskAsync(new Uri(ctx.User.AvatarUrl));
             IMagickImage ava = new MagickImage(stream);
             Stream streamm = new MemoryStream();
@@ -43,7 +44,6 @@ namespace FloatzelSharp.commands {
             await memory.DisposeAsync();
             await stream.DisposeAsync();
             img.Dispose();
-            //client.Dispose();
         }
 
         [Command("wall"), Description("make a wall from an attachment"), Category(Category.Image)]
@@ -64,6 +64,7 @@ namespace FloatzelSharp.commands {
             }
             // download attachment
             WebClient client = new WebClient();
+            client.OpenReadCompleted += (_, __) => client.Dispose();
             Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.VirtualPixelMethod = VirtualPixelMethod.Tile;
@@ -76,7 +77,6 @@ namespace FloatzelSharp.commands {
             await memory.DisposeAsync();
             await stream.DisposeAsync();
             img.Dispose();
-            //client.Dispose();
         }
 
         [Command("swirl"), Description("swirls an image. Incredible"), Category(Category.Image)]
@@ -97,6 +97,7 @@ namespace FloatzelSharp.commands {
             }
             // download attachment
             WebClient client = new WebClient();
+            client.OpenReadCompleted += (_, __) => client.Dispose();
             Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Swirl((double)180);
@@ -107,7 +108,6 @@ namespace FloatzelSharp.commands {
             await memory.DisposeAsync();
             await stream.DisposeAsync();
             img.Dispose();
-            //client.Dispose();
         }
 
         [Command("jpeg"), Description("make any image into an authentic JPEG"), Category(Category.Image)]
@@ -128,6 +128,7 @@ namespace FloatzelSharp.commands {
             }
             // download attachment
             WebClient client = new WebClient();
+            client.OpenReadCompleted += (_, __) => client.Dispose();
             Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Format = MagickFormat.Jpeg;
@@ -139,7 +140,7 @@ namespace FloatzelSharp.commands {
             await memory.DisposeAsync();
             await stream.DisposeAsync();
             img.Dispose();
-            //client.Dispose();
+           
         }
 
         [Command("pixel"), Description("reduces an image to 1x1 in size"), Category(Category.Image)]
@@ -160,6 +161,7 @@ namespace FloatzelSharp.commands {
             }
             // download attachment
             WebClient client = new WebClient();
+            client.OpenReadCompleted += (_, __) => client.Dispose();
             Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Resize(1, 1);
@@ -171,7 +173,6 @@ namespace FloatzelSharp.commands {
             await memory.DisposeAsync();
             await stream.DisposeAsync();
             img.Dispose();
-            //client.Dispose();
         }
 
         [Command("explode"), Description("explodes an image"), Category(Category.Image)]
@@ -192,6 +193,7 @@ namespace FloatzelSharp.commands {
             }
             // download attachment
             WebClient client = new WebClient();
+            client.OpenReadCompleted += (_, __) => client.Dispose();
             Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Implode(-2, PixelInterpolateMethod.Bilinear);
@@ -202,7 +204,6 @@ namespace FloatzelSharp.commands {
             await memory.DisposeAsync();
             await stream.DisposeAsync();
             img.Dispose();
-            //client.Dispose();
         }
 
         [Command("implode"), Description("implodes an image"), Category(Category.Image)]
@@ -223,6 +224,7 @@ namespace FloatzelSharp.commands {
             }
             // download attachment
             WebClient client = new WebClient();
+            client.OpenReadCompleted += (_, __) => client.Dispose();
             Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Implode(1, PixelInterpolateMethod.Bilinear);
@@ -233,7 +235,6 @@ namespace FloatzelSharp.commands {
             await memory.DisposeAsync();
             await stream.DisposeAsync();
             img.Dispose();
-            //client.Dispose();
         }
     }
 }
