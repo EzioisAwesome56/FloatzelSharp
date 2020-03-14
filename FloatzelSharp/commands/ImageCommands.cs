@@ -111,5 +111,43 @@ namespace FloatzelSharp.commands {
             img.Format = MagickFormat.Png64;
             await ctx.RespondWithFileAsync("jpeg.jpg", new MemoryStream(img.ToByteArray()));
         }
+
+        [Command("explode"), Description("explodes an image"), Category(Category.Image)]
+        public async Task explode(CommandContext ctx) {
+            // TODO: check message history
+            await ctx.TriggerTypingAsync();
+            // check for attachments
+            if (ctx.Message.Attachments.Count < 0) {
+                await ctx.RespondAsync("You did not give me an attachment you fool!");
+                return;
+            }
+            // download attachment
+            WebClient client = new WebClient();
+            var dank = ctx.Message.Attachments;
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            IMagickImage img = new MagickImage(stream);
+            img.Implode(-2, PixelInterpolateMethod.Bilinear);
+            img.Format = MagickFormat.Png64;
+            await ctx.RespondWithFileAsync("explode.png", new MemoryStream(img.ToByteArray()));
+        }
+
+        [Command("implode"), Description("implodes an image"), Category(Category.Image)]
+        public async Task implode(CommandContext ctx) {
+            // TODO: check message history
+            await ctx.TriggerTypingAsync();
+            // check for attachments
+            if (ctx.Message.Attachments.Count < 0) {
+                await ctx.RespondAsync("You did not give me an attachment you fool!");
+                return;
+            }
+            // download attachment
+            WebClient client = new WebClient();
+            var dank = ctx.Message.Attachments;
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            IMagickImage img = new MagickImage(stream);
+            img.Implode(1, PixelInterpolateMethod.Bilinear);
+            img.Format = MagickFormat.Png64;
+            await ctx.RespondWithFileAsync("implode.png", new MemoryStream(img.ToByteArray()));
+        }
     }
 }
