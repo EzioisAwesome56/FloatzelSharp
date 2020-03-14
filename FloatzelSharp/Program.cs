@@ -26,6 +26,7 @@ namespace FloatzelSharp
         static InteractivityExtension? Interactivity;
         static void Main(string[] args)
         {
+            Console.WriteLine($"Floatzel Version {version} now starting up...");
             Database.dbinit();
             // check if we have old tweets to convert
             if (Database.dbCheckForOldTweets()) {
