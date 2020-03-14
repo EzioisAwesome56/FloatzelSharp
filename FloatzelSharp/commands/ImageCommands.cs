@@ -64,7 +64,25 @@ namespace FloatzelSharp.commands {
             img.Swirl((double)180);
             img.Format = MagickFormat.Png64;
             await ctx.RespondWithFileAsync("swirl.png", new MemoryStream(img.ToByteArray()));
+        }
 
+        [Command("jpeg"), Description("make any image into an authentic JPEG"), Category(Category.Image)]
+        public async Task jpeg(CommandContext ctx) {
+            // TODO: check message history
+            await ctx.TriggerTypingAsync();
+            // check for attachments
+            if (ctx.Message.Attachments.Count < 0) {
+                await ctx.RespondAsync("You did not give me an attachment you fool!");
+                return;
+            }
+            // download attachment
+            WebClient client = new WebClient();
+            var dank = ctx.Message.Attachments;
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            IMagickImage img = new MagickImage(stream);
+            img.Format = MagickFormat.Jpeg;
+            img.Quality = 0;
+            await ctx.RespondWithFileAsync("jpeg.jpg", new MemoryStream(img.ToByteArray()));
         }
     }
 }
