@@ -15,8 +15,8 @@ namespace FloatzelSharp.commands {
 
         private async Task<string> GetPastAttachment(CommandContext ctx) {
             string url = null;
-            var dank = await ctx.Channel.GetMessagesAsync(4);
-            for (var i = 0; i <= 3; i++) {
+            var dank = await ctx.Channel.GetMessagesAsync(10);
+            for (var i = 0; i <= 9; i++) {
                 if (dank[i].Attachments.Count > 0) {
                     url = dank[i].Attachments[0].Url;
                     break;
