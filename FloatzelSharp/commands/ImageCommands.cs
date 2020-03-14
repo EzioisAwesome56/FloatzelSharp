@@ -13,7 +13,7 @@ using DSharpPlus.Entities;
 namespace FloatzelSharp.commands {
     class ImageCommands : BaseCommandModule {
 
-        private async Task<Stream> GetAttachmentStream(CommandContext ctx) {
+        private async Task<string> GetPastAttachment(CommandContext ctx) {
             string url = null;
             var dank = await ctx.Channel.GetMessagesAsync(4);
             for (var i = 0; i <= 3; i++) {
