@@ -80,8 +80,35 @@ namespace FloatzelSharp.commands {
             var dank = ctx.Message.Attachments;
             Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
             IMagickImage img = new MagickImage(stream);
+            var h = dank[0].Height;
+            var w = dank[0].Width;
             img.Format = MagickFormat.Jpeg;
             img.Quality = 0;
+            img.Resize(w / 2 / 2, h / 2 / 2);
+            img.Format = MagickFormat.Jpeg;
+            img.Quality = 0;
+            img.Resize(w, h);
+            img.Quality = 0;
+            await ctx.RespondWithFileAsync("jpeg.jpg", new MemoryStream(img.ToByteArray()));
+        }
+
+        [Command("pixel"), Description("reduces an image to 1x1 in size"), Category(Category.Image)]
+        public async Task pixel(CommandContext ctx) {
+            // TODO: check message history
+            await ctx.TriggerTypingAsync();
+            // check for attachments
+            if (ctx.Message.Attachments.Count < 0) {
+                await ctx.RespondAsync("You did not give me an attachment you fool!");
+                return;
+            }
+            // download attachment
+            WebClient client = new WebClient();
+            var dank = ctx.Message.Attachments;
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            IMagickImage img = new MagickImage(stream);
+            img.Resize(1, 1);
+            img.Resize(200, 200);
+            img.Format = MagickFormat.Png64;
             await ctx.RespondWithFileAsync("jpeg.jpg", new MemoryStream(img.ToByteArray()));
         }
     }
