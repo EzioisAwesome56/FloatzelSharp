@@ -64,6 +64,7 @@ namespace FloatzelSharp
             commands.RegisterCommands<FunCommands>();
             commands.RegisterCommands<OwnerCommands>();
             commands.RegisterCommands<ShopGroup>();
+            commands.RegisterCommands<ImageCommands>();
 
             await discord.ConnectAsync();
             await Task.Delay(-1);
