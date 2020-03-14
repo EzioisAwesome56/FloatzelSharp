@@ -8,9 +8,23 @@ using System.IO;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using FloatzelSharp.help;
+using DSharpPlus.Entities;
 
 namespace FloatzelSharp.commands {
     class ImageCommands : BaseCommandModule {
+
+        private async Task<string> GetPastAttachment(CommandContext ctx) {
+            string url = null;
+            var dank = await ctx.Channel.GetMessagesAsync(4);
+            for (var i = 0; i <= 3; i++) {
+                if (dank[i].Attachments.Count > 0) {
+                    url = dank[i].Attachments[0].Url;
+                    break;
+                }
+            }
+            return url;
+
+        }
 
         [Command("imagetest"), Description("this command exists to make sure "), Category(Category.Test)]
         public async Task dank(CommandContext ctx) {
@@ -31,14 +45,20 @@ namespace FloatzelSharp.commands {
             // type a thing(tm)
             await ctx.TriggerTypingAsync();
             // check for attachments
-            if(ctx.Message.Attachments.Count < 0) {
-                await ctx.RespondAsync("You did not give me an attachment you fool!");
-                return;
+            string dank;
+            if (ctx.Message.Attachments.Count < 1) {
+                // check msg attachments
+                dank = await GetPastAttachment(ctx);
+                if (dank == null) {
+                    await ctx.RespondAsync("I couldn't find any attachments!");
+                    return;
+                }
+            } else {
+                dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
             WebClient client = new WebClient();
-            var dank = ctx.Message.Attachments;
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.VirtualPixelMethod = VirtualPixelMethod.Tile;
             img.Resize(512, 512);
@@ -49,17 +69,23 @@ namespace FloatzelSharp.commands {
 
         [Command("swirl"), Description("swirls an image. Incredible"), Category(Category.Image)]
         public async Task swirl(CommandContext ctx) {
-            // TODO: check message history
+            // type a thing(tm)
             await ctx.TriggerTypingAsync();
             // check for attachments
-            if (ctx.Message.Attachments.Count < 0) {
-                await ctx.RespondAsync("You did not give me an attachment you fool!");
-                return;
+            string dank;
+            if (ctx.Message.Attachments.Count < 1) {
+                // check msg attachments
+                dank = await GetPastAttachment(ctx);
+                if (dank == null) {
+                    await ctx.RespondAsync("I couldn't find any attachments!");
+                    return;
+                }
+            } else {
+                dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
             WebClient client = new WebClient();
-            var dank = ctx.Message.Attachments;
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Swirl((double)180);
             img.Format = MagickFormat.Png64;
@@ -68,43 +94,49 @@ namespace FloatzelSharp.commands {
 
         [Command("jpeg"), Description("make any image into an authentic JPEG"), Category(Category.Image)]
         public async Task jpeg(CommandContext ctx) {
-            // TODO: check message history
+            /// type a thing(tm)
             await ctx.TriggerTypingAsync();
             // check for attachments
-            if (ctx.Message.Attachments.Count < 0) {
-                await ctx.RespondAsync("You did not give me an attachment you fool!");
-                return;
+            string dank;
+            if (ctx.Message.Attachments.Count < 1) {
+                // check msg attachments
+                dank = await GetPastAttachment(ctx);
+                if (dank == null) {
+                    await ctx.RespondAsync("I couldn't find any attachments!");
+                    return;
+                }
+            } else {
+                dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
             WebClient client = new WebClient();
-            var dank = ctx.Message.Attachments;
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
-            var h = dank[0].Height;
-            var w = dank[0].Width;
             img.Format = MagickFormat.Jpeg;
             img.Quality = 0;
-            img.Resize(w / 2 / 2, h / 2 / 2);
-            img.Format = MagickFormat.Jpeg;
-            img.Quality = 0;
-            img.Resize(w, h);
-            img.Quality = 0;
+            img.Quality = -5;
             await ctx.RespondWithFileAsync("jpeg.jpg", new MemoryStream(img.ToByteArray()));
         }
 
         [Command("pixel"), Description("reduces an image to 1x1 in size"), Category(Category.Image)]
         public async Task pixel(CommandContext ctx) {
-            // TODO: check message history
+            // type a thing(tm)
             await ctx.TriggerTypingAsync();
             // check for attachments
-            if (ctx.Message.Attachments.Count < 0) {
-                await ctx.RespondAsync("You did not give me an attachment you fool!");
-                return;
+            string dank;
+            if (ctx.Message.Attachments.Count < 1) {
+                // check msg attachments
+                dank = await GetPastAttachment(ctx);
+                if (dank == null) {
+                    await ctx.RespondAsync("I couldn't find any attachments!");
+                    return;
+                }
+            } else {
+                dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
             WebClient client = new WebClient();
-            var dank = ctx.Message.Attachments;
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Resize(1, 1);
             img.Resize(200, 200);
@@ -114,17 +146,23 @@ namespace FloatzelSharp.commands {
 
         [Command("explode"), Description("explodes an image"), Category(Category.Image)]
         public async Task explode(CommandContext ctx) {
-            // TODO: check message history
+            // type a thing(tm)
             await ctx.TriggerTypingAsync();
             // check for attachments
-            if (ctx.Message.Attachments.Count < 0) {
-                await ctx.RespondAsync("You did not give me an attachment you fool!");
-                return;
+            string dank;
+            if (ctx.Message.Attachments.Count < 1) {
+                // check msg attachments
+                dank = await GetPastAttachment(ctx);
+                if (dank == null) {
+                    await ctx.RespondAsync("I couldn't find any attachments!");
+                    return;
+                }
+            } else {
+                dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
             WebClient client = new WebClient();
-            var dank = ctx.Message.Attachments;
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Implode(-2, PixelInterpolateMethod.Bilinear);
             img.Format = MagickFormat.Png64;
@@ -133,17 +171,23 @@ namespace FloatzelSharp.commands {
 
         [Command("implode"), Description("implodes an image"), Category(Category.Image)]
         public async Task implode(CommandContext ctx) {
-            // TODO: check message history
+            // type a thing(tm)
             await ctx.TriggerTypingAsync();
             // check for attachments
-            if (ctx.Message.Attachments.Count < 0) {
-                await ctx.RespondAsync("You did not give me an attachment you fool!");
-                return;
+            string dank;
+            if (ctx.Message.Attachments.Count < 1) {
+                // check msg attachments
+                dank = await GetPastAttachment(ctx);
+                if (dank == null) {
+                    await ctx.RespondAsync("I couldn't find any attachments!");
+                    return;
+                }
+            } else {
+                dank = ctx.Message.Attachments[0].Url;
             }
             // download attachment
             WebClient client = new WebClient();
-            var dank = ctx.Message.Attachments;
-            Stream stream = await client.OpenReadTaskAsync(new Uri(dank[0].Url));
+            Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
             IMagickImage img = new MagickImage(stream);
             img.Implode(1, PixelInterpolateMethod.Bilinear);
             img.Format = MagickFormat.Png64;
