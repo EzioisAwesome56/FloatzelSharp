@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Exceptions;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using FloatzelSharp.commands;
 using FloatzelSharp.util;
@@ -24,6 +27,9 @@ namespace FloatzelSharp
         static DiscordClient discord;
         static CommandsNextExtension commands;
         static InteractivityExtension? Interactivity;
+        // timer for game status stuff
+        private static Timer GameTimer = null
+            ;
         static void Main(string[] args)
         {
             Console.WriteLine($"Floatzel Version {version} now starting up...");
@@ -49,6 +55,9 @@ namespace FloatzelSharp
                 LogLevel = LogLevel.Debug
             });
 
+            // thingy for game status
+            discord.Ready += OnReady;
+
             Interactivity = discord.UseInteractivity(new InteractivityConfiguration());
 
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
@@ -71,5 +80,55 @@ namespace FloatzelSharp
             await Task.Delay(-1);
 
         }
+
+        // copy-paste from KekbotSharp, with a few minor edits cuz im not sharding
+        private static Task OnReady(ReadyEventArgs e) {
+            Console.WriteLine("Floatzel is ready to serve!");
+
+            if (GameTimer == null) {
+                GameTimer = new Timer(GameTimerCallback, e.Client, TimeSpan.Zero, TimeSpan.FromMinutes(15));
+            }
+            return Task.CompletedTask;
+        }
+
+        // copy-pasted function from kekbotSharp, but heavily modifyed to suit my needs
+        // thanks, jorge!
+        private static async void GameTimerCallback(object _) {
+            var client = _ as DiscordClient;
+            try {
+                DiscordActivity dank = null;
+                var rng = rand.Next(3);
+                switch (rng) {
+                    case 0:
+                        dank = new DiscordActivity(games[rand.Next(games.Length)], ActivityType.ListeningTo);
+                        break;
+                    case 1:
+                        dank = new DiscordActivity(games[rand.Next(games.Length)], ActivityType.Playing);
+                        break;
+                    case 2:
+                        dank = new DiscordActivity(games[rand.Next(games.Length)], ActivityType.Watching);
+                        break;
+                }
+                await client.UpdateStatusAsync(dank, UserStatus.Online);
+                Console.WriteLine($"Presense updated to {dank.ActivityType.ToString()} - {dank.Name.ToString()} at {DateTime.Now.ToString()}");
+                GC.Collect();
+            } catch (Exception e) {
+                Console.WriteLine("ERROR UPDATING STATUS!!!!!");
+            }
+        }
+
+
+        // copy-paste from Floatzel: Java Edition. GAMES
+        // imo they are too iconic to be thrown away entirely
+        static string[] games = { "Windows 7", "mspaint.exe", "&help", "Nintendo Gamecube", "GIMP startup",
+            "fucking weed", "Sonic 09", "Dying in a hole", "gay xd", "Exploding North Korea", "Being a terrorist", "BSOD",
+            "Extra gay", "memerino and the dank machine", "Dankform", "Half Life 4", "18 is a god", "SaltyPepper", "@here",
+            "Simpsons", "Explosive cheese", "Being a bot", "hi Cublex", "Pentium 3", "meme machine", "18 is bisexual", "ezio is bi",
+            "PyCharm", "Rectangle Gay", "Making the frogs gay", "eirrac", "what the fuck is a hedgehog", "heck you blur", "enitsirhc", "fuck me harder daddy",
+            "Intelij", "Smoking weed", "Persona -12 + GAY DLC", "Circles", "Godson is radical", "Ryan is gay", "Java 10", "with Yukari", "Super Dankio Ocyssey",
+            "Fucking Mitsuru with a stick", "Persona: Waifu simulator", "Ezio X Yukari", "Yukari is hot", "Ezio is dumb", "Smelling Ralsei's feet", "Licking Ralsei feetz",
+            "Calling 18 a gaylord", "Watching Mitsuru and Ralsei fuck", "DMAN has the largest gay", "TOUHOU", "Nintendo", "Linux, bitch", "Mozilla Chrome", "Shooting Internet Explorer", "hi esmbot",
+            "Cirno is dumb lol"};
+
     }
 }
