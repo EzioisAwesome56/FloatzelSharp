@@ -31,12 +31,7 @@ namespace FloatzelSharp.commands {
         }
 
         [Command("box"), Priority(1), Description("used to purcahse lootboxes.")]
-        public async Task box(CommandContext ctx, [Description("the type of box you wish to buy")] string type) {
-            // check if they even gave a type of box
-            /*if (type == null) {
-                await ctx.RespondAsync("You forgot to say what type of box you wish to buy!");
-                return;
-            }*/
+        public async Task box(CommandContext ctx, [Description("the type of box you wish to buy")] string type) { 
             // filter out pings
             type = type.Replace("@everyone", "at everyone").Replace("@here", "at here");
             // check to make sure a valid type was set
