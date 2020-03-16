@@ -237,5 +237,20 @@ namespace FloatzelSharp.commands {
                 img.Dispose();
             }
         }
+
+        [Command("reverse"), Description("busts out everyone's favorite uno card"), Aliases("uno"), Category(Category.Fun)]
+        public async Task reverse(CommandContext ctx) {
+            await ctx.TriggerTypingAsync();
+            // generate random number 1-4
+            var rng = Program.rand.Next(6) + 1;
+            // open uno card
+            var card = new MagickImage($"Resources/Uno/card{rng.ToString()}.png");
+            card.Format = MagickFormat.Png64;
+            var mem = new MemoryStream(card.ToByteArray());
+            card.Dispose();
+            await ctx.RespondWithFileAsync("uno.png", mem);
+            await mem.DisposeAsync();
+
+        }
     }
 }
