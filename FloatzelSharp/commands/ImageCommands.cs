@@ -226,6 +226,7 @@ namespace FloatzelSharp.commands {
             using (var client = new WebClient()) {
                 Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
                 IMagickImage img = new MagickImage(stream);
+                //IMagickImage img = new MagickImage("Resources/test.png");
                 img.Implode(1, PixelInterpolateMethod.Bilinear);
                 img.Format = MagickFormat.Png64;
                 var memory = new MemoryStream(img.ToByteArray());
