@@ -222,5 +222,20 @@ namespace FloatzelSharp.util {
             }
             return dank;
         }
+
+        // count how many stocks are in the stock table
+        public static async Task<int> dbCountStocks() {
+            return await r.Table(stocktable).Count().RunAsync<int>(thonk);
+        }
+
+        // load a stock
+        public static async Task<Stock> dbLoadStock(string id) {
+            return await r.Table(stocktable).Get(id).RunAsync<Stock>(thonk);
+        }
+
+        // save a stock
+        public static async Task dbSaveStock(Stock st) {
+            await r.Table(stocktable).Get(st.sid).Update(st).RunAsync(thonk);
+        }
     }
 }

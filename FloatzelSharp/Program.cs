@@ -28,8 +28,11 @@ namespace FloatzelSharp
         static CommandsNextExtension commands;
         static InteractivityExtension? Interactivity;
         // timer for game status stuff
-        private static Timer GameTimer = null
-            ;
+        private static Timer GameTimer = null;
+        // timer for stock market updates
+        private static Timer StockTimer = null;
+        public static bool CanStock = true;
+
         static void Main(string[] args)
         {
             Console.WriteLine($"Floatzel Version {version} now starting up...");
@@ -88,6 +91,9 @@ namespace FloatzelSharp
             if (GameTimer == null) {
                 GameTimer = new Timer(GameTimerCallback, e.Client, TimeSpan.Zero, TimeSpan.FromMinutes(15));
             }
+            if (StockTimer == null) {
+                StockTimer = new Timer(StockUpdater, 0, TimeSpan.Zero, TimeSpan.FromMinutes(15));
+            }
             return Task.CompletedTask;
         }
 
@@ -115,6 +121,46 @@ namespace FloatzelSharp
             } catch (Exception e) {
                 Console.WriteLine("ERROR UPDATING STATUS!!!!!");
             }
+        }
+
+        // tiimer function to update le stock market
+        private static async void StockUpdater(object a) {
+            // init the update shit
+            CanStock = false;
+            Console.WriteLine("Floatzel is now updating the stocks...");
+            // get how many stocks are present
+            var total = await Database.dbCountStocks();
+            var count = 1;
+            // loop time OOF
+            while (total >= count) {
+                // step 1: load the first stock
+                var stock = await Database.dbLoadStock(count.ToString());
+                // step 2: generate how much to add/subtract
+                var rng = rand.Next(500);
+                // step 3: add or subtract?
+                var type = rand.Next(2);
+                // step 4: actually do the thing
+                if (type == 0) {
+                    stock.price += rng;
+                    stock.diff = rng;
+                } else {
+                    stock.price -= rng;
+                    stock.diff = rng - (rng * 2);
+                }
+                // step 4.5: check if the new price if below 0
+                if (stock.price < 0) {
+                    stock.price = 1;
+                }
+                // step 5: save the stock back to the database
+                await Database.dbSaveStock(stock);
+                // step 6 (optional): report stock has been updated
+                Console.WriteLine($"Stock id {count} has been updated");
+                // step 7: inc the counter
+                count++;
+            }
+            // we are done updating, re open the market
+            CanStock = true;
+            Console.WriteLine("Floatzel has finished updating all the stocks.");
         }
 
 
