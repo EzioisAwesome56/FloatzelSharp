@@ -99,7 +99,7 @@ namespace FloatzelSharp.commands {
             using (var client = new WebClient()) {
                 Stream stream = await client.OpenReadTaskAsync(new Uri(dank));
                 IMagickImage img = new MagickImage(stream);
-                await Task.Run(() => img.Swirl((double)180));
+                img.Swirl((double)180);
                 img.Format = MagickFormat.Png64;
                 var memory = new MemoryStream(img.ToByteArray());
                 await ctx.RespondWithFileAsync("swirl.png", memory);
