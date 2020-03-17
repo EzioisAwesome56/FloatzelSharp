@@ -145,7 +145,7 @@ namespace FloatzelSharp
                     stock.diff = rng;
                 } else {
                     stock.price -= rng;
-                    stock.diff = rng - (rng * 2);
+                    stock.diff = -rng;
                 }
                 // step 4.5: check if the new price if below 0
                 if (stock.price < 0) {
