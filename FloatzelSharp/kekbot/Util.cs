@@ -61,5 +61,9 @@ namespace FloatzelSharp.kekbot
             }
         }
 
+        public static String PrintTimeSpan(TimeSpan time) {
+            return $"{(time.Days > 0 ? $"{time.Days} Days, " : "")}{(time.Hours > 0 ? $"{time.Hours} Hours, " : "")}{time.Minutes} Minute{(time.Minutes > 1 ? "s" : "")}, and {time.Seconds} Second{(time.Seconds > 1 ? "s" : "")}.";
+        }
+
     }
 }

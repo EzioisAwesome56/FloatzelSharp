@@ -9,7 +9,9 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Lavalink;
 using FloatzelSharp.commands;
+using FloatzelSharp.kekbot;
 using FloatzelSharp.util;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FloatzelSharp
 {
@@ -35,7 +37,8 @@ namespace FloatzelSharp
         public static bool CanStock = true;
 
         // i think we need this for lavalink
-        public LavalinkExtension Lavalink { get; }
+        static LavalinkExtension Lavalink { get; set; }
+        static IServiceProvider Services { get; set; }
 
         static void Main(string[] args)
         {
@@ -67,11 +70,20 @@ namespace FloatzelSharp
 
             Interactivity = discord.UseInteractivity(new InteractivityConfiguration());
 
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration
-            {
+            Lavalink = discord.UseLavalink();
+
+            // services shit
+            // mostly for lavaplayer
+            Services = new ServiceCollection()
+                .AddSingleton<MusicService>()
+                .AddSingleton(new LavalinkService(discord))
+                .BuildServiceProvider(true);
+
+            commands = discord.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefixes = new string[] { config.Dev ? config.Devfix : config.Prefix },
                 EnableDefaultHelp = false,
-                IgnoreExtraArguments = true
+                IgnoreExtraArguments = true,
+                Services = Services
             });
             commands.CommandErrored += PrintError;
             commands.RegisterCommands<OtherCommands>();
@@ -82,6 +94,7 @@ namespace FloatzelSharp
             commands.RegisterCommands<OwnerCommands>();
             commands.RegisterCommands<ShopGroup>();
             commands.RegisterCommands<ImageCommands>();
+            commands.RegisterCommands<MusicCommands>();
 
             await discord.ConnectAsync();
             await Task.Delay(-1);
@@ -100,6 +113,14 @@ namespace FloatzelSharp
             }
             return Task.CompletedTask;
         }
+
+        // loosely based on kekbotsharp
+        // does shit
+        private static async Task HandleError(CommandErrorEventArgs errorArgs) {
+            var error = errorArgs.Exception;
+            var ctx = errorArgs.Context;
+        }
+
 
         // copy-pasted function from kekbotSharp, but heavily modifyed to suit my needs
         // thanks, jorge!
@@ -127,8 +148,8 @@ namespace FloatzelSharp
             }
         }
 
-        // tiimer function to update le stock market
-        private static async void StockUpdater(object a) {
+            // tiimer function to update le stock market
+            private static async void StockUpdater(object a) {
             // init the update shit
             CanStock = false;
             Console.WriteLine("Floatzel is now updating the stocks...");
