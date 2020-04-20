@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Lavalink;
 using FloatzelSharp.commands;
 using FloatzelSharp.util;
 
@@ -32,6 +33,9 @@ namespace FloatzelSharp
         // timer for stock market updates
         private static Timer StockTimer = null;
         public static bool CanStock = true;
+
+        // i think we need this for lavalink
+        public LavalinkExtension Lavalink { get; }
 
         static void Main(string[] args)
         {
