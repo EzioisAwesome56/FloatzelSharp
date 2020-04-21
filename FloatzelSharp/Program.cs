@@ -85,7 +85,7 @@ namespace FloatzelSharp
                 IgnoreExtraArguments = true,
                 Services = Services
             });
-            commands.CommandErrored += PrintError;
+            commands.CommandErrored += HandleError;
             commands.RegisterCommands<OtherCommands>();
             commands.RegisterCommands<TestCommands>();
             commands.RegisterCommands<HelpCmd>();
@@ -119,6 +119,10 @@ namespace FloatzelSharp
         private static async Task HandleError(CommandErrorEventArgs errorArgs) {
             var error = errorArgs.Exception;
             var ctx = errorArgs.Context;
+            if (error is CommandCancelledException) {
+                return;
+            }
+            await PrintError(errorArgs);
         }
 
 

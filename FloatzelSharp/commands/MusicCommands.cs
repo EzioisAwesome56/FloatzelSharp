@@ -26,13 +26,13 @@ namespace FloatzelSharp.commands {
             var vs = ctx.Member.VoiceState;
             var chn = vs.Channel;
             if (chn == null) {
-                await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":msraisedhand:")} You need to be in a voice channel.");
+                await ctx.RespondAsync($"You need to be in a voice channel.");
                 throw new CommandCancelledException();
             }
 
             var mbr = ctx.Guild.CurrentMember?.VoiceState?.Channel;
             if (mbr != null && chn != mbr) {
-                await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":msraisedhand:")} You need to be in the same voice channel.");
+                await ctx.RespondAsync($"You need to be in the same voice channel.");
                 throw new CommandCancelledException();
             }
 
