@@ -16,5 +16,7 @@ namespace FloatzelSharp.types {
         public bool bloan { get; set; }
         [JsonProperty]
         public int[] boxes { get; set; }
+        [JsonProperty]
+        public int[] stock { get; set; }
     }
 }

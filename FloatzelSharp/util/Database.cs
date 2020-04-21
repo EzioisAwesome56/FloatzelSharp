@@ -152,8 +152,9 @@ namespace FloatzelSharp.util {
             r.TableCreate(stockbuy).OptArg("primary_key", "uid").Run(thonk);*/
         }
 
-
+        // <summary>
         // check if a user profile exists; also serves as bank account importer from 2.x db to 3.x
+        // </summary>
         public static async Task<bool> dbCheckIfExist(string id) {
             var dank = await r.Table(account).Get(id).RunAsync(thonk);
             if (dank == null) {
@@ -177,32 +178,16 @@ namespace FloatzelSharp.util {
         }
 
         // self-explanitory: make a new profile for a user
-        public static async Task dbCreateProfile(string id) {
-            Profile dank = new Profile();
-            dank.uid = id;
-            dank.bal = 0;
-            dank.loantime = (double)0;
-            dank.bloan = false;
-            dank.boxes = new int[] { 0, 0, 0, 0 };
+        public static async Task dbCreateProfile(string id, int bal = 0, double time = 0) {
+            Profile dank = new Profile {
+                uid = id,
+                bal = bal,
+                loantime = time,
+                bloan = false,
+                boxes = new int[] { 0, 0, 0, 0 },
+                stock = new int[] { 0, 0, 0 }
+            };
             await r.Table(account).Insert(dank).RunAsync(thonk);
-        }
-        public static async Task dbCreateProfile(string id, int bal) {
-            Profile dank = new Profile();
-            dank.uid = id;
-            dank.bal = bal;
-            dank.loantime = (double)0;
-            dank.bloan = false;
-            dank.boxes = new int[] { 0, 0, 0, 0 };
-            await r.Table(account).Insert(dank).RunAsync(thonk);
-        }
-        public static async Task dbCreateProfile(string id, int bal, double time) {
-            Profile Dank = new Profile();
-            Dank.uid = id;
-            Dank.bal = bal;
-            Dank.bloan = false;
-            Dank.loantime = time;
-            Dank.boxes = new int[] { 0, 0, 0, 0 };
-            await r.Table(account).Insert(Dank).RunAsync(thonk);
         }
 
         // load a user profile

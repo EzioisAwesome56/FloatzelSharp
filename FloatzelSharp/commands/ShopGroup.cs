@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using FloatzelSharp.help;
+using FloatzelSharp.types;
 using FloatzelSharp.util;
 using System;
 using System.Collections.Generic;
@@ -132,6 +133,78 @@ namespace FloatzelSharp.commands {
                     await ctx.RespondAsync($"You do not have 150{icon} for this box! You only have {prof.bal.ToString()}");
                     return;
                 }
+            }
+        }
+
+        [Group("stock"), Description("The one-stop shop for your stock market needs!"), Category(Category.Money)]
+        class StockGroup : BaseCommandModule {
+            [GroupCommand]
+            public async Task shop(CommandContext ctx) {
+                await ctx.RespondAsync($"Welcome to the floatzel Stock market!\n" +
+                    $"Here are our list of sub commands:\n" +
+                    $"```view - View current stock information\n" +
+                    $"me - view what stock you currently own (if any)\n" +
+                    $"buy - buy a share in a stock\n" +
+                    $"sell - sell your share in a stock```");
+                return;
+            }
+
+            [Command("view"), Description("View the current state of the stock market"), Category(Category.Money)]
+            public async Task view(CommandContext ctx) {
+                // type
+                await ctx.TriggerTypingAsync();
+                // is the stock market updating?
+                if (!Program.CanStock) {
+                    await ctx.RespondAsync("The stock market is currently updating, please wait");
+                    return;
+                }
+                // count how many stocks are in the table
+                int count = await Database.dbCountStocks();
+                StringBuilder dank = new StringBuilder();
+                dank.Append($"```Floatzel Stock Market\n");
+                // loop through all the stocks
+                for(int i = 1; i <= count; i++) {
+                    Stock weed = await Database.dbLoadStock(i.ToString());
+                    dank.Append($"{weed.name}-{weed.sid}\n");
+                    dank.Append($"Price: {weed.price}\n");
+                    dank.Append($"Difference from last price: {weed.diff}\n");
+                    dank.Append($"Units: {weed.units}\n\n");
+                }
+                dank.Append("```");
+                // send message
+                await ctx.RespondAsync(dank.ToString());
+            }
+
+            [Command("me"), Description("check the status of your stock"), Category(Category.Money)]
+            public async Task me(CommandContext ctx) {
+                // check if the user even has a profile to begin with
+                if (!await Database.dbCheckIfExist(ctx.Member.Id.ToString())) {
+                    // make a profile
+                    await Database.dbCreateProfile(ctx.Member.Id.ToString());
+                    // since we just made a profile, we have no reason to run any other code
+                    await ctx.RespondAsync("You own no stocks!");
+                    return;
+                }
+                // check if the stockmarket is updating
+                if (!Program.CanStock) {
+                    await ctx.RespondAsync("The stock market is updating, please wait");
+                    return;
+                }
+                var prof = await Database.dbLoadProfile(ctx.Member.Id.ToString());
+                // do they even have a stock?
+                if (prof.stock[0] == 0) {
+                    await ctx.RespondAsync("You own no stocks!");
+                    return;
+                }
+                // load the stock id of the stock that they bought
+                var stock = await Database.dbLoadStock(prof.stock[0].ToString());
+                StringBuilder a = new StringBuilder();
+                a.Append("Your stock profile```\n");
+                a.Append($"Name: {stock.name}\n");
+                a.Append($"Price at purchase: {prof.stock[1]}\n");
+                a.Append($"Current price: {stock.price}\n");
+                a.Append($"Net gain: {stock.price - prof.stock[1]}```");
+                await ctx.RespondAsync(a.ToString());
             }
         }
     }
