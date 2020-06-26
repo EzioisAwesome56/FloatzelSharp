@@ -26,7 +26,7 @@ namespace FloatzelSharp.commands {
 
         }
 
-        [Command("imagetest"), Description("this command exists to make sure "), Category(Category.Test)]
+        /*[Command("imagetest"), Description("this command exists to make sure "), Category(Category.Test)]
         public async Task dank(CommandContext ctx) {
             await ctx.TriggerTypingAsync();
 
@@ -44,7 +44,7 @@ namespace FloatzelSharp.commands {
                 await stream.DisposeAsync();
                 img.Dispose();
             }
-        }
+        }*/
 
         [Command("wall"), Description("make a wall from an attachment"), Category(Category.Image)]
         public async Task wall(CommandContext ctx) {
