@@ -206,6 +206,23 @@ namespace FloatzelSharp.commands {
                 a.Append($"Net gain: {stock.price - prof.stock[1]}```");
                 await ctx.RespondAsync(a.ToString());
             }
+
+            [Command("buy"), Description("purchase a share in a stock"), Category(Category.Money)]
+            public async Task buy(CommandContext ctx, [Description("id of stock you wish to purchase")] int id = -1) {
+                // load this for later use
+                var conf = await Config.Get();
+                // first check if user did not spesify a stock id they would like to purchase
+                if (id == -1) {
+                    await ctx.RespondAsync($"You did not specify the ID for which stock you want to purchase. Please use \"{Config.Get().Result.Prefix}stock view\" to find the correct ID!");
+                    return;
+                }
+                // check if the stock is a valid id
+                if (await Database.dbCheckForStock(id.ToString())) {
+                    await ctx.RespondAsync($"Provided stock id is INVALID! Please use \"{(conf.Dev ? conf.Devfix : conf.Prefix)}stock view\" to find the correct ID!");
+                    return;
+                }
+                await ctx.RespondAsync("WORK IN PROGRESS!");
+            }
         }
     }
 }

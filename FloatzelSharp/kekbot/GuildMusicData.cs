@@ -215,7 +215,7 @@ namespace FloatzelSharp.kekbot {
             if (this.Volume != 100)
                 await this.Player.SetVolumeAsync(this.Volume);
             this.Player.PlaybackFinished += this.PlaybackFinished;
-            await CommandChannel.SendMessageAsync("Music Session Started (Debug Message)");
+            await CommandChannel.SendMessageAsync($"A music session has started in {channel.Name}!");
             return true;
         }
 
@@ -239,7 +239,7 @@ namespace FloatzelSharp.kekbot {
 
             this.Player = null;
             this.Host = null;
-            await CommandChannel.SendMessageAsync("Music Session Ended (Debug Message)");
+            await CommandChannel.SendMessageAsync($"The previously active music session has been terminated");
             this.CommandChannel = null;
         }
 

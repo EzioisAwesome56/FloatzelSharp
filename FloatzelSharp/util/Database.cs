@@ -218,6 +218,11 @@ namespace FloatzelSharp.util {
             return await r.Table(stocktable).Get(id).RunAsync<Stock>(thonk);
         }
 
+        // check if a stock DOES NOT exist
+        public static async Task<bool> dbCheckForStock(string id) {
+            return await r.Table(stocktable).Filter(r.HashMap("sid", id)).Count().Eq(0).RunAsync<bool>(thonk);
+        }
+
         // save a stock
         public static async Task dbSaveStock(Stock st) {
             await r.Table(stocktable).Get(st.sid).Update(st).RunAsync(thonk);
