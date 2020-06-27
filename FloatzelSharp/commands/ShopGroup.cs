@@ -201,8 +201,8 @@ namespace FloatzelSharp.commands {
                 StringBuilder a = new StringBuilder();
                 a.Append("Your stock profile```\n");
                 a.Append($"Name: {stock.name}\n");
-                a.Append($"Price at purchase: {prof.stock[1]}\n");
-                a.Append($"Current price: {stock.price}\n");
+                a.Append($"Price at purchase: {prof.stock[1]}{icon}\n");
+                a.Append($"Current price: {stock.price}{icon}\n");
                 a.Append($"Net gain: {stock.price - prof.stock[1]}```");
                 await ctx.RespondAsync(a.ToString());
             }
