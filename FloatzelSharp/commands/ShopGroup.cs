@@ -214,12 +214,12 @@ namespace FloatzelSharp.commands {
                 var uid = ctx.Member.Id.ToString();
                 // first check if user did not spesify a stock id they would like to purchase
                 if (id == -1) {
-                    await ctx.RespondAsync($"You did not specify the ID for which stock you want to purchase. Please use \"{(conf.Dev ? conf.Devfix : conf.Prefix)}stock view\" to find the correct ID!");
+                    await ctx.RespondAsync($"You did not specify the ID for which stock you want to purchase. Please use \"{(conf.Dev ? conf.Devfix : conf.Prefix)}shop stock view\" to find the correct ID!");
                     return;
                 }
                 // check if the stock is a valid id
                 if (await Database.dbCheckForStock(id.ToString())) {
-                    await ctx.RespondAsync($"Provided stock id is INVALID! Please use \"{(conf.Dev ? conf.Devfix : conf.Prefix)}stock view\" to find the correct ID!");
+                    await ctx.RespondAsync($"Provided stock id is INVALID! Please use \"{(conf.Dev ? conf.Devfix : conf.Prefix)}shop stock view\" to find the correct ID!");
                     return;
                 }
                 // check if the stock market is currently open
@@ -238,12 +238,34 @@ namespace FloatzelSharp.commands {
                 if (!await Database.dbCheckIfExist(uid)) {
                     // create blank profile
                     await Database.dbCreateProfile(uid);
-                    // TODO: load stock price and math with it
                     await ctx.RespondAsync($"You do NOT have the required {stock.price}{icon} to purcahse this stock!");
                     return;
                 }
-
-                await ctx.RespondAsync("WORK IN PROGRESS!");
+                // load the user's profile for use very soon
+                var profile = await Database.dbLoadProfile(uid);
+                // check if the user already has a stock
+                if (profile.stock[0] != 0) {
+                    await ctx.RespondAsync("You already own a stock! please sell it first before you buy another one!");
+                    return;
+                }
+                // check if the user has the money required to buy the stock
+                if (profile.bal < stock.price) {
+                    await ctx.RespondAsync($"You are {stock.price - profile.bal}{icon} short from being able to afford this stock!");
+                    return;
+                }
+                // looks like all checks have passed. Start the purchase
+                // subtract the price from their wallet
+                profile.bal -= stock.price;
+                // subtract 1 stock unit from the stock itself
+                stock.units -= 1;
+                // update the profile's stock id and bought price, in that order
+                profile.stock[0] = id;
+                profile.stock[1] = stock.price;
+                // save both stock and profile back to the database
+                await Database.dbSaveProfile(profile);
+                await Database.dbSaveStock(stock);
+                // inform the user
+                await ctx.RespondAsync($"You have purchased 1 share in {stock.name} for {stock.price}{icon}!");
             }
         }
     }
