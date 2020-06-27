@@ -166,8 +166,8 @@ namespace FloatzelSharp.commands {
                 for(int i = 1; i <= count; i++) {
                     Stock weed = await Database.dbLoadStock(i.ToString());
                     dank.Append($"{weed.name}-{weed.sid}\n");
-                    dank.Append($"Price: {weed.price}\n");
-                    dank.Append($"Difference from last price: {weed.diff}\n");
+                    dank.Append($"Price: {weed.price}{icon}\n");
+                    dank.Append($"Difference from last price: {weed.diff}{icon}\n");
                     dank.Append($"Units: {weed.units}\n\n");
                 }
                 dank.Append("```");
@@ -211,9 +211,10 @@ namespace FloatzelSharp.commands {
             public async Task buy(CommandContext ctx, [Description("id of stock you wish to purchase")] int id = -1) {
                 // load this for later use
                 var conf = await Config.Get();
+                var uid = ctx.Member.Id.ToString();
                 // first check if user did not spesify a stock id they would like to purchase
                 if (id == -1) {
-                    await ctx.RespondAsync($"You did not specify the ID for which stock you want to purchase. Please use \"{Config.Get().Result.Prefix}stock view\" to find the correct ID!");
+                    await ctx.RespondAsync($"You did not specify the ID for which stock you want to purchase. Please use \"{(conf.Dev ? conf.Devfix : conf.Prefix)}stock view\" to find the correct ID!");
                     return;
                 }
                 // check if the stock is a valid id
@@ -221,6 +222,27 @@ namespace FloatzelSharp.commands {
                     await ctx.RespondAsync($"Provided stock id is INVALID! Please use \"{(conf.Dev ? conf.Devfix : conf.Prefix)}stock view\" to find the correct ID!");
                     return;
                 }
+                // check if the stock market is currently open
+                if (!Program.CanStock) {
+                    await ctx.RespondAsync("The stock market is currently CLOSED! Please try again later");
+                    return;
+                }
+                // load the stock for future use here
+                var stock = await Database.dbLoadStock(id.ToString());
+                //  check if there are any units left to purchase
+                if (stock.units == 0) {
+                    await ctx.RespondAsync("This stock has no more shares left for purchase. Please try again later");
+                    return;
+                }
+                // check if the user has a profile
+                if (!await Database.dbCheckIfExist(uid)) {
+                    // create blank profile
+                    await Database.dbCreateProfile(uid);
+                    // TODO: load stock price and math with it
+                    await ctx.RespondAsync($"You do NOT have the required {stock.price}{icon} to purcahse this stock!");
+                    return;
+                }
+
                 await ctx.RespondAsync("WORK IN PROGRESS!");
             }
         }
