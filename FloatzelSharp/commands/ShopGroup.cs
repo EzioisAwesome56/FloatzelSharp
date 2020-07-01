@@ -291,7 +291,20 @@ namespace FloatzelSharp.commands {
                     await ctx.RespondAsync($"Are you sure you want to sell your share in {stock.name} for {stock.price}{icon}? Please run \"{(conf.Dev ? conf.Devfix : conf.Prefix)}shop stock sell yes\" to confirm this transaction!");
                     return;
                 }
-                await ctx.RespondAsync("A");
+                // update the user profile, first clear out stock information
+                prof.stock[0] = 0;
+                prof.stock[1] = 0;
+                // add the price of the stock to their wallet
+                prof.bal += stock.price;
+                // add 1 unit to stock
+                stock.units += 1;
+                // for the hell of it; reduce stock price by 25
+                stock.price -= 25;
+                // save both things back to the database
+                await Database.dbSaveProfile(prof);
+                await Database.dbSaveStock(stock);
+                // send message
+                await ctx.RespondAsync($"You have obtained {stock.price}{icon} for selling your share in {stock.name}!");
             }
         }
     }
