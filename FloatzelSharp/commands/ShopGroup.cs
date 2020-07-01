@@ -269,7 +269,7 @@ namespace FloatzelSharp.commands {
             }
 
             [Command("sell"), Description("Sell your shares for money"), Category(Category.Money)]
-            public async Task sell(CommandContext ctx, string firm = null) {
+            public async Task sell(CommandContext ctx, string firm = "heccu") {
                 var conf = await Config.Get();
                 // check if they have a profile
                 string uid = ctx.Member.Id.ToString();
@@ -287,7 +287,7 @@ namespace FloatzelSharp.commands {
                 // load stock
                 var stock = await Database.dbLoadStock(prof.stock[0].ToString());
                 // did they confirm this action?
-                if (!firm.Contains("yes") {
+                if (!firm.Contains("yes")) {
                     await ctx.RespondAsync($"Are you sure you want to sell your share in {stock.name} for {stock.price}{icon}? Please run \"{(conf.Dev ? conf.Devfix : conf.Prefix)}shop stock sell yes\" to confirm this transaction!");
                     return;
                 }
