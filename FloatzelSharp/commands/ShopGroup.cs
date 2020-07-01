@@ -27,7 +27,7 @@ namespace FloatzelSharp.commands {
                 $"Tier 2 (t2)- 100{icon}\n" +
                 $"Tier 3 (t3)- 300{icon}\n" +
                 $"Tier 4 (t4)- 500{icon}\n" +
-                $"Randomize Tier (r)- 150{icon}");
+                $"Randomize Tier (r)- 150{icon}\n");
             return;
         }
 
@@ -61,7 +61,7 @@ namespace FloatzelSharp.commands {
                     await ctx.RespondAsync("You bought 1 Tier 1 lootbox!");
                     return;
                 } else {
-                    await ctx.RespondAsync($"You do not have 20{icon} for this box! You only have {prof.bal.ToString()}");
+                    await ctx.RespondAsync($"You do not have 20{icon} for this box! You only have {prof.bal.ToString()}{icon}");
                     return;
                 }
             } else if (type.Equals("t2")) {
@@ -75,7 +75,7 @@ namespace FloatzelSharp.commands {
                     await ctx.RespondAsync("You bought 1 Tier 2 lootbox!");
                     return;
                 } else {
-                    await ctx.RespondAsync($"You do not have 100{icon} for this box! You only have {prof.bal.ToString()}");
+                    await ctx.RespondAsync($"You do not have 100{icon} for this box! You only have {prof.bal.ToString()}{icon}");
                     return;
                 }
             } else if (type.Equals("t3")) {
@@ -89,7 +89,7 @@ namespace FloatzelSharp.commands {
                     await ctx.RespondAsync("You bought 1 Tier 3 lootbox!");
                     return;
                 } else {
-                    await ctx.RespondAsync($"You do not have 300{icon} for this box! You only have {prof.bal.ToString()}");
+                    await ctx.RespondAsync($"You do not have 300{icon} for this box! You only have {prof.bal.ToString()}{icon}");
                     return;
                 }
             } else if (type.Equals("t4")) {
@@ -103,7 +103,7 @@ namespace FloatzelSharp.commands {
                     await ctx.RespondAsync("You bought 1 Tier 4 lootbox!");
                     return;
                 } else {
-                    await ctx.RespondAsync($"You do not have 500{icon} for this box! You only have {prof.bal.ToString()}");
+                    await ctx.RespondAsync($"You do not have 500{icon} for this box! You only have {prof.bal.ToString()}{icon}");
                     return;
                 }
             } else if (type.Equals("r")) {
@@ -130,7 +130,7 @@ namespace FloatzelSharp.commands {
                     await Database.dbSaveProfile(prof);
                     return;
                 } else {
-                    await ctx.RespondAsync($"You do not have 150{icon} for this box! You only have {prof.bal.ToString()}");
+                    await ctx.RespondAsync($"You do not have 150{icon} for this box! You only have {prof.bal.ToString()}{icon}");
                     return;
                 }
             }
