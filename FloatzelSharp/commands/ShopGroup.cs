@@ -267,6 +267,32 @@ namespace FloatzelSharp.commands {
                 // inform the user
                 await ctx.RespondAsync($"You have purchased 1 share in {stock.name} for {stock.price}{icon}!");
             }
+
+            [Command("sell"), Description("Sell your shares for money"), Category(Category.Money)]
+            public async Task sell(CommandContext ctx, string firm = null) {
+                var conf = await Config.Get();
+                // check if they have a profile
+                string uid = ctx.Member.Id.ToString();
+                if (!await Database.dbCheckIfExist(uid)) {
+                    await ctx.RespondAsync("You do not own a stock to sell! Please purchase one before selling");
+                    return;
+                }
+                // is the market open?
+                if (!Program.CanStock) {
+                    await ctx.RespondAsync("The market is currently closed. Please try again later");
+                    return;
+                }
+                // load profile
+                var prof = await Database.dbLoadProfile(uid);
+                // load stock
+                var stock = await Database.dbLoadStock(prof.stock[0].ToString());
+                // did they confirm this action?
+                if (!firm.Contains("yes") {
+                    await ctx.RespondAsync($"Are you sure you want to sell your share in {stock.name} for {stock.price}{icon}? Please run \"{(conf.Dev ? conf.Devfix : conf.Prefix)}shop stock sell yes\" to confirm this transaction!");
+                    return;
+                }
+                await ctx.RespondAsync("A");
+            }
         }
     }
 }
