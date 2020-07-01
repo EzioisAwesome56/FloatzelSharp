@@ -133,7 +133,7 @@ namespace FloatzelSharp.commands {
             if (!await Database.dbCheckIfExist(uid)) {
                 // just give them a loan right off the bat
                 await Database.dbCreateProfile(uid, amount, Utils.GetCurrentMilli());
-                await ctx.RespondAsync($"You got a loan of {amount}!");
+                await ctx.RespondAsync($"You got a loan of {amount}{icon}!");
             } else {
                 // load profile
                 var profile = await Database.dbLoadProfile(uid);
@@ -152,7 +152,7 @@ namespace FloatzelSharp.commands {
                     // save new shit
                     profile.bal += amount;
                     profile.loantime = time;
-                    await ctx.RespondAsync($"you took out a loan of {amount.ToString()}");
+                    await ctx.RespondAsync($"you took out a loan of {amount.ToString()}{icon}");
                     await Database.dbSaveProfile(profile);
                     return;
                 }
@@ -200,7 +200,7 @@ namespace FloatzelSharp.commands {
                 // save new shit
                 prof.bal += amount;
                 prof.loantime = time;
-                await ctx.RespondAsync($"you took out a loan of {amount.ToString()}");
+                await ctx.RespondAsync($"you took out a loan of {amount.ToString()}{icon}");
                 await Database.dbSaveProfile(prof);
                 return;
             }
