@@ -119,7 +119,7 @@ namespace FloatzelSharp.kekbot
             builder.Title = e.Title ?? "";
             builder.Description = e.Description;
             builder.Color = e.Color.ToNullable() ?? Color;
-            builder.ThumbnailUrl = e.Thumbnail?.Url?.ToString();
+            builder.WithThumbnail(e.Thumbnail?.Url?.ToString());
             builder.Timestamp = e.Timestamp;
             builder.WithAuthor(e.Author?.Name, e.Author?.Url?.ToString(), e.Author?.IconUrl?.ToString());
 

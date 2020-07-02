@@ -287,7 +287,7 @@ namespace FloatzelSharp.kekbot {
             builder.AddField("Now Playing:", item.Track.Title, true);
             builder.AddField("Queued By:", item.RequestedBy.Mention, true);
             builder.AddField("URL:", item.Track.Uri.ToString(), false);
-            builder.ThumbnailUrl = item.RequestedBy.AvatarUrl;
+            builder.WithThumbnail(item.RequestedBy.AvatarUrl);
             await CommandChannel.SendMessageAsync(embed: builder.Build());
         }
     }
