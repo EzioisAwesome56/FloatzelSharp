@@ -34,6 +34,18 @@ namespace FloatzelSharp.commands {
             }
             // load the user's profile
             var prof = await Database.dbLoadProfile(uid);
+            // check if they have any lootboxes at all
+            if (prof.boxes[0] == 0 && prof.boxes[1] == 0 && prof.boxes[2] == 0 && prof.boxes[3] == 0) {
+                await ctx.RespondAsync("You own no lootboxes! Go buy some and try again!");
+                return;
+            }
+            // produce fancy display
+            await ctx.RespondAsync($"```These are your current lootboxes:\n\n" +
+                $"Tier 1 boxes: {prof.boxes[0]}\n" +
+                $"Tier 2 boxes: {prof.boxes[1]}\n" +
+                $"Tier 3 boxes: {prof.boxes[2]}\n" +
+                $"Tier 4 boxes: {prof.boxes[3]}```");
+            return;
         }
     }
 }
