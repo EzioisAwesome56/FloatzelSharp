@@ -95,6 +95,7 @@ namespace FloatzelSharp
             commands.RegisterCommands<ShopGroup>();
             commands.RegisterCommands<ImageCommands>();
             commands.RegisterCommands<MusicCommands>();
+            commands.RegisterCommands<LootboxGroup>();
 
             await discord.ConnectAsync();
             await Task.Delay(-1);
