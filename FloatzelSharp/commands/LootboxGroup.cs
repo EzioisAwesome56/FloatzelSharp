@@ -105,7 +105,7 @@ namespace FloatzelSharp.commands {
             // actually give them the money
             prof.bal += a;
             // remove 1 box
-            prof.boxes[0] -= 1;
+            prof.boxes[type] -= 1;
             // save profile
             await Database.dbSaveProfile(prof);
         }
