@@ -140,6 +140,12 @@ namespace FloatzelSharp.commands {
                 case "t3":
                     await doLootBox(ctx, prof, 150, 600, 3);
                     break;
+                case "t4":
+                    await doLootBox(ctx, prof, 250, 1000, 4);
+                    break;
+                default:
+                    await ctx.RespondAsync($"the lootbox type you entered is not valid! Please enter a valid lootbox type next time!");
+                    break;
 
             }
         }
