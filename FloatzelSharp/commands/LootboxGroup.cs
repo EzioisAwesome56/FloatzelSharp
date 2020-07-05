@@ -85,7 +85,7 @@ namespace FloatzelSharp.commands {
                     // wait, how the fuck did you end up here?
                     // well, i congratulate you for somehow getting here. Im absolutely amazed
                     // you can have a free lootbox I guess
-                    Console.WriteLine("WARNING! Someone managed to enter the defualt path at the Switch Statement starting at line 59 in file LootboxGroup.cs! PANIC!");
+                    Console.WriteLine("WARNING! Someone managed to enter the default path at the Switch Statement starting at line 59 in file LootboxGroup.cs! PANIC!");
                     return true;
             }
         }
