@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using FloatzelSharp.help;
+using FloatzelSharp.types;
 using FloatzelSharp.util;
 using System;
 using System.Collections.Generic;
@@ -32,11 +33,10 @@ namespace FloatzelSharp.commands {
                 await ctx.RespondAsync("You do not own any lootboxes!");
                 return;
             }
-            // load the user's profile
+            // check if they have boxes
             var prof = await Database.dbLoadProfile(uid);
-            // check if they have any lootboxes at all
-            if (prof.boxes[0] == 0 && prof.boxes[1] == 0 && prof.boxes[2] == 0 && prof.boxes[3] == 0) {
-                await ctx.RespondAsync("You own no lootboxes! Go buy some and try again!");
+            if (await checkForBox(prof)) {
+                await ctx.RespondAsync("You do not own any lootboxes!");
                 return;
             }
             // produce fancy display
@@ -46,6 +46,102 @@ namespace FloatzelSharp.commands {
                 $"Tier 3 boxes: {prof.boxes[2]}\n" +
                 $"Tier 4 boxes: {prof.boxes[3]}```");
             return;
+        }
+
+        private async Task<bool> checkForBox(Profile prof) {
+            if (prof.boxes[0] == 0 && prof.boxes[1] == 0 && prof.boxes[2] == 0 && prof.boxes[3] == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        private static bool checkForBox(int type, Profile prof) {
+            switch (type) {
+                case 1:
+                    if (prof.boxes[0] == 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                case 2:
+                    if (prof.boxes[1] == 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                case 3:
+                    if (prof.boxes[2] == 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                case 4:
+                    if (prof.boxes[3] == 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                default:
+                    // wait, how the fuck did you end up here?
+                    // well, i congratulate you for somehow getting here. Im absolutely amazed
+                    // you can have a free lootbox I guess
+                    Console.WriteLine("WARNING! Someone managed to enter the defualt path at the Switch Statement starting at line 59 in file LootboxGroup.cs! PANIC!");
+                    return true;
+            }
+        }
+        // to avoid copy pasting this same code over and over
+        // this handles all the lootbox opening math and random shit
+        // deal with it NERDS
+        private async Task doLootBox(CommandContext ctx, Profile prof, int min, int max, int type) {
+            // do they even have this type of lootbox?
+            if (!checkForBox(type, prof)) {
+                await ctx.RespondAsync($"You do not own any Tier {type} lootboxes!");
+                return;
+            }
+            // generate random number
+            var a = Program.rand.Next(min, max);
+            // tell the user what they have won
+            await ctx.RespondAsync($"Upon opening the lootbox, you obtained {a}{icon}!");
+            // actually give them the money
+            prof.bal += a;
+            // remove 1 box
+            prof.boxes[0] -= 1;
+            // save profile
+            await Database.dbSaveProfile(prof);
+        }
+
+        [Command("open"), Description("used to open owned lootboxes"), Category(Category.Money)]
+        public async Task open(CommandContext ctx, [Description("type of lootbox to open. Valid input: t1, t2, t3, t4")] string type = "oof") {
+            // get user id
+            string uid = ctx.Member.Id.ToString();
+            // check if the user in question even has a profile
+            if (!await Database.dbCheckIfExist(uid)) {
+                await ctx.RespondAsync("You do not own any lootboxes! please go buy some from the shop!");
+                return;
+            }
+            // load profile & check if it has any lootboxes
+            var prof = await Database.dbLoadProfile(uid);
+            if (!await checkForBox(prof)) {
+                await ctx.RespondAsync("you do not own any lootboxes! please buy some with the shop!");
+                return;
+            }
+            // did they say what type of lootbox they want to open?
+            if (type.Contains("oof")) {
+                await ctx.RespondAsync("You forgot to spesify what type of lootbox you wish to open. Please input either t1, t2, t3 or t4 after the open command!");
+                return;
+            }
+            switch (type) {
+                case "t1":
+                    await doLootBox(ctx, prof, 1, 40, 1);
+                    break;
+                case "t2":
+                    await doLootBox(ctx, prof, 50, 200, 2);
+                    break;
+                case "t3":
+                    await doLootBox(ctx, prof, 150, 600, 3);
+                    break;
+
+            }
         }
     }
 }
