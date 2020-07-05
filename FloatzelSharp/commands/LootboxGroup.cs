@@ -35,7 +35,7 @@ namespace FloatzelSharp.commands {
             }
             // check if they have boxes
             var prof = await Database.dbLoadProfile(uid);
-            if (await checkForBox(prof)) {
+            if (!await checkForBox(prof)) {
                 await ctx.RespondAsync("You do not own any lootboxes!");
                 return;
             }
