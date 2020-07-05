@@ -200,6 +200,13 @@ namespace FloatzelSharp.util {
             await r.Table(account).Get(dank.uid).Update(dank).RunAsync(thonk);
         }
 
+        // OWNER SHIT:
+        // do you absolutely hate someone?
+        // DELETE THEIR PROFILE with this command!
+        public static async Task dbDeleteProfile(string uid) {
+            await r.Table(account).Get(uid).Delete().RunAsync(thonk);
+        }
+
         // convert old permissions into new permissions
         public static async Task<Profile> dbConvertPerms(Profile dank) {
             if (await r.Table(bloanperm).Filter(r.HashMap("uid", dank.uid)).Count().Eq(1).RunAsync<bool>(oldthonk)) {
