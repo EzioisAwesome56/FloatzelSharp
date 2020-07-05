@@ -36,5 +36,41 @@ namespace FloatzelSharp.commands {
             await Database.dbDeleteProfile(mem.Id.ToString());
             await ctx.RespondAsync("Profile deleted!");
         }
+
+        [Command("admin"), Description("Grant somebody bot admin"), Category(Category.Owner), RequireOwner()]
+        public async Task grantadmin(CommandContext ctx, [Description("user whom you wish to make admin")] DiscordMember mem = null) {
+            // check if no user is set
+            if (mem == null) {
+                await ctx.RespondAsync("You did not say who you wish to make bot admin!");
+                return;
+            }
+            // check if they have a profile
+            var uid = mem.Id.ToString();
+            if (!await Database.dbCheckIfExist(uid)) {
+                await Database.dbCreateProfile(uid);
+                var prof = await Database.dbLoadProfile(uid);
+                prof.admin = true;
+                await Database.dbSaveProfile(prof);
+            } else {
+                var prof = await Database.dbLoadProfile(uid);
+                prof.admin = true;
+                await Database.dbSaveProfile(prof);
+            }
+            await ctx.RespondAsync("granted the user admin!");
+        }
+
+        [Command("unadmin"), Description("remove someone's admin"), Category(Category.Owner), RequireOwner()]
+        public async Task removeAdmin(CommandContext ctx, [Description("user who you wish to remove their admin")] DiscordMember mem = null) {
+            // did they say who they want to remove admin from
+            if (mem == null) {
+                await ctx.RespondAsync("You did not give me a valid discord user whom to remove their admin rights");
+                return;
+            }
+            var uid = mem.Id.ToString();
+            var prof = await Database.dbLoadProfile(uid);
+            prof.admin = false;
+            await Database.dbSaveProfile(prof);
+            await ctx.RespondAsync("Admin removed from user");
+        }
     }
 }

@@ -235,5 +235,15 @@ namespace FloatzelSharp.util {
         public static async Task dbSaveStock(Stock st) {
             await r.Table(stocktable).Get(st.sid).Update(st).RunAsync(thonk);
         }
+
+        // save a new tweet
+        public static async Task dbSaveTweet(Tweet bird) {
+            await r.Table(tweets).Insert(bird).RunAsync(thonk);
+        }
+
+        // count all the tweets in the db
+        public static async Task<int> dbCountTweets() {
+            return await r.Table(tweets).Count().RunAsync<int>(thonk);
+        }
     }
 }

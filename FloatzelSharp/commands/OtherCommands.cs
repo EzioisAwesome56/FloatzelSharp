@@ -6,6 +6,8 @@ using FloatzelSharp.help;
 using DSharpPlus.CommandsNext.Attributes;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using FloatzelSharp.attribute;
+using FloatzelSharp.util;
 
 namespace FloatzelSharp
 {
@@ -52,6 +54,22 @@ namespace FloatzelSharp
             await ctx.RespondAsync($"This bot's invite link is {oof.Invite}");
         }
 
+        [Command("addtweet"), Description("Add a tweet to the tweet pool (admin only!)"), Category(Category.Other), RequireAdmin()]
+        public async Task addtweet(CommandContext ctx, [Description("text for the tweet you want to add")] string txt = "gfshjkadllhjjdsfi7") {
+            // did they even say what they wanted to add?
+            if (txt.Contains("gfshjkadllhjjdsfi7")) {
+                await ctx.RespondAsync("You did not say what you wanted to add as a tweet!");
+                return;
+            }
+            await ctx.RespondAsync("unfinished command!");
+        }
+
+        [Command("counttweets"), Description("count how many tweets floatzel has"), Category(Category.Other)]
+        public async Task counttweets(CommandContext ctx) {
+            // load total amount from database
+            var total = await Database.dbCountTweets();
+            await ctx.RespondAsync($"There are a total of {total} tweets in the database.");
+        }
 
     }
 }
