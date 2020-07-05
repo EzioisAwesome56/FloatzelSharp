@@ -81,5 +81,15 @@ namespace FloatzelSharp
             await ctx.RespondAsync($"There are a total of {total} tweets in the database.");
         }
 
+        [Command("tweet"), Description("post something to Floatzel's Twitter acc"), Category(Category.Other), RequireAdmin()]
+        public async Task tweet(CommandContext ctx, [Description("the content you wish to tweet")] string content = "gfshjkadllhjjdsfi7") {
+            // did they even put what they want
+            if (content.Contains("gfshjkadllhjjdsfi7")) {
+                await ctx.RespondAsync("you did not spesify what you wish to tweet");
+                return;
+            }
+            // TO-DO: FINISH THIS
+        }
+
     }
 }
