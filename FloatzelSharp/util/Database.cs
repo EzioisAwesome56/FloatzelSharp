@@ -185,7 +185,8 @@ namespace FloatzelSharp.util {
                 loantime = time,
                 bloan = false,
                 boxes = new int[] { 0, 0, 0, 0 },
-                stock = new int[] { 0, 0, 0 }
+                stock = new int[] { 0, 0, 0 },
+                admin = false
             };
             await r.Table(account).Insert(dank).RunAsync(thonk);
         }

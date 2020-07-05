@@ -18,5 +18,8 @@ namespace FloatzelSharp.types {
         public int[] boxes { get; set; }
         [JsonProperty]
         public int[] stock { get; set; }
+        [JsonProperty]
+        public bool admin { get; set; }
+
     }
 }
