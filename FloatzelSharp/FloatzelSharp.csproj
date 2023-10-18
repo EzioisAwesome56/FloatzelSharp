@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,7 +11,7 @@
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00709" />
     <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-nightly-00709" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00709" />
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.20.0.1" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.3.0" />
     <PackageReference Include="RethinkDb.Driver" Version="2.4.0-beta-1" />
   </ItemGroup>
   
